@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import InvoiceGenerator from "../features/invoice/components/InvoiceGenerator";
+---
+
+<Layout title="Cuentas de cobro">
+    <section>
+        <InvoiceGenerator client:visible />
+    </section>
+</Layout>

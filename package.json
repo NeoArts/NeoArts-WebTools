@@ -7,7 +7,9 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist --branch gh-pages --dotfiles"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -21,6 +23,7 @@
     "@types/react-dom": "^18.3.0",
     "astro": "^4.14.5",
     "flowbite-react": "^0.10.1",
+    "gh-pages": "^6.1.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
     "react": "^18.3.1",

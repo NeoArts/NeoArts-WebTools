@@ -1,5 +1,5 @@
 import { getLastMonth, getSpanishFormattedDate } from "../../../shared/services/dateUtils";
-import { pdfImages } from "../../pdf/assets/pdfImages";
+import { pdfImages, quoteTemplate } from "../../pdf/assets/pdfImages";
 import { PdfProvider } from "../../pdf/services/pdfUtils";
 
 export const generateInvoice = (invoice: Invoice) => {
@@ -24,7 +24,10 @@ export const generateInvoice = (invoice: Invoice) => {
     doc.AddBlankLines(2);
     doc.AddHeader6("Por el concepto de:");
     doc.AddTable(
-        ["SERVICIO", "VALOR"],
+        [
+            {text: "Servicio", width: 0.8}, 
+            {text: "Valor", width: 0.2}
+        ],
         [
             ...invoice.services.map(service => [service.name, `$${addThousandSeparator(service.value)} COP`]),
             ["Total a pagar", `$${addThousandSeparator(invoice.services.reduce((acc, curr) => acc + curr.value, 0))} COP`]
@@ -48,6 +51,60 @@ export const generateInvoice = (invoice: Invoice) => {
     doc.AddLine("Tomás Parra Monroy");
     doc.AddLine("CC 1.001.098.088");
     doc.DownloadPdf(`Cuenta de cobro ${invoice.company} ${getSpanishFormattedDate()}.pdf`);
+};
+
+export const generateQuote = (quoteGeneralData: any, products: Product[]) => {
+    const doc = new PdfProvider();
+    
+    doc.SetMargin(60);
+    doc.SetFont("Montserrat");
+    
+    doc.AddLine(`Bogotá D.C.`);
+    doc.AddLine(`${getSpanishFormattedDate()}`);
+    doc.AddBlankLines(1);
+    doc.AddLine("Señores");
+    doc.AddLine(quoteGeneralData.client);
+    doc.AddLine("Bogotá");
+    doc.AddBlankLines(1);
+    doc.AddHeader6("REF: VPM-" + quoteGeneralData.number);
+    doc.AddBlankLines(1);
+    doc.AddLine("Tenemos el agrado de cotizar las siguientes referencias");
+    doc.AddBlankLines(1);
+    doc.AddTable(
+        [
+            {text: "ARTICULO", width: 0.2}, 
+            {text: "MARCA", width: 0.1},
+            {text: "IMAGEN", width: 0.2},
+            {text: "UND", width: 0.1},
+            {text: "VALOR UN", width: 0.2}
+        ],
+        [
+            ...products.map(product => [product.name, product.markType, "", product.quantity.toString(), `$${addThousandSeparator(product.sellPrice)} COP`])
+        ]
+    , [...products.map((x:any) => x.image.height)], products);
+
+    function addThousandSeparator(value: number): string {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    doc.SetTextColor(0, 0, 0);
+    doc.AddLine('NOTA: Las cantidades  entregadas pueden variar en un 2% aproximadamente,');
+    doc.AddLine('sobre el total de la orden.');
+    doc.AddBlankLines(1);
+    doc.AddLine('Cantidad sujeta a disponibilidad de inventario al momento de la orden de compra.');
+    doc.AddLine('Los precios aplican únicamente a las cantidades establecidas en este documento. ');
+
+    doc.AddBlankLines(1);
+    doc.AddLineTab("IVA", "19%");
+    doc.AddLineTab("Validez de la oferta:", "3 días");
+    doc.AddLineTab("Forma de pago:", "A convenir");
+    doc.AddLineTab("Tiempo de producción:", "A convenir");
+    doc.AddLineTab("Entrega(s):", "A convenir");
+
+    doc.AddSign(quoteTemplate.sign, "PNG", 60, 220, 80);
+    
+    doc.AddTemplate();
+    doc.DownloadPdf(`Cotización ${quoteGeneralData.client} ${"REF: VPM-" + quoteGeneralData.number}.pdf`);
 };
 
 export const templates = [

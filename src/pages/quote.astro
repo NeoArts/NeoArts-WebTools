@@ -2,11 +2,11 @@
 import Layout from "../layouts/Layout.astro";
 import Filters from "../features/quote/components/Filters";
 import Workspace from "../features/docs/components/Workspace";
+import QuoteGenerator from "../features/quote/components/QuoteGenerator";
 ---
 
 <Layout title="cotizaciones">
     <section>
-        <Filters client:load />
-        <Workspace client:load />
+        <QuoteGenerator client:load />
     </section>
 </Layout>

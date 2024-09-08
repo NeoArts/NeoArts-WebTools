@@ -1,7 +1,7 @@
 import React from 'react'
 
 function Dropdown(
-    { options, label, id, labelPosition, value, setValue, placeholder } : 
+    { options, label, id, labelPosition, value, setValue, placeholder, className } : 
     { 
         options: string[],
         id: string,
@@ -9,7 +9,8 @@ function Dropdown(
         labelPosition?: 'top' | 'left'
         value: string,
         setValue: (e: any) => void,
-        placeholder?: string
+        placeholder?: string,
+        className?: string
     }
 ) {
 
@@ -17,10 +18,10 @@ function Dropdown(
     const [open, setOpen] = React.useState(false)
 
     return (
-        <div className={`w-full relative z-10 gap-2 ${labelPosition === 'top' ? "flex-col" : "flex-row items-center"}`}>
+        <div className={`${className} w-full relative z-10 gap-2 ${labelPosition === 'top' ? "flex-col" : "flex-row items-center"}`}>
             {label && <label htmlFor={id}>{label}:</label>}
             <div 
-                className='flex justify-between items-center p-2 cursor-pointer bg-white rounded-md'
+                className={`${label && "mt-2"} flex justify-between items-center p-2 cursor-pointer bg-white rounded-md`}
                 onClick={() => setOpen(!open)}
             >
                 <input

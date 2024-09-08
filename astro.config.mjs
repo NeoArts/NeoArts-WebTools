@@ -7,8 +7,9 @@ import react from "@astrojs/react";
 // https://astro.build/config
 export default defineConfig({
   integrations: [tailwind(), react()],
-  site: 'https://neoarts.github.io',
-  base: '/NeoArts-WebTools',
   output: 'hybrid',
-  adapter: vercel(),
+  adapter: vercel({
+    edgeMiddleware: true,
+    imageService: true,
+  }),
 });

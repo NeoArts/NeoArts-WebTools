@@ -1,5 +1,5 @@
-import { A as AstroError, f as NoImageMetadata, F as FailedToFetchRemoteImageDimensions, g as ExpectedImageOptions, h as ExpectedImage, i as ExpectedNotESMImage, r as resolveSrc, j as isRemoteImage, k as isESMImportedImage, l as isLocalService, D as DEFAULT_HASH_PROPS, m as InvalidImageService, n as ImageMissingAlt, o as isRemotePath, p as isRemoteAllowed } from '../chunks/astro/assets-service_DnEbj1jQ.mjs';
-import { b as createAstro, c as createComponent, r as renderTemplate, m as maybeRenderHead, d as addAttribute, s as spreadAttributes } from '../chunks/astro/server_CJOAcbgq.mjs';
+import { A as AstroError, g as NoImageMetadata, F as FailedToFetchRemoteImageDimensions, h as ExpectedImageOptions, i as ExpectedImage, j as ExpectedNotESMImage, r as resolveSrc, k as isRemoteImage, l as isESMImportedImage, m as isLocalService, D as DEFAULT_HASH_PROPS, n as InvalidImageService, o as ImageMissingAlt, p as isRemotePath, q as isRemoteAllowed } from '../chunks/astro/assets-service_CUdmFSl7.mjs';
+import { c as createComponent, r as renderTemplate, m as maybeRenderHead, d as addAttribute, s as spreadAttributes, b as createAstro } from '../chunks/astro/server_B0HlvySp.mjs';
 import 'clsx';
 import * as mime from 'mrmime';
 export { renderers } from '../renderers.mjs';
@@ -842,8 +842,8 @@ async function getConfiguredImageService() {
   if (!globalThis?.astroAsset?.imageService) {
     const { default: service } = await import(
       // @ts-expect-error
-      '../chunks/astro/assets-service_DnEbj1jQ.mjs'
-    ).then(n => n.Z).catch((e) => {
+      '../chunks/build-service_Fmal-hxg.mjs'
+    ).catch((e) => {
       const error = new AstroError(InvalidImageService);
       error.cause = e;
       throw error;
@@ -928,7 +928,7 @@ async function getImage$1(options, imageConfig) {
   };
 }
 
-const $$Astro$1 = createAstro("https://neoarts.github.io");
+const $$Astro$1 = createAstro();
 const $$Image = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro$1, $$props, $$slots);
   Astro2.self = $$Image;
@@ -950,7 +950,7 @@ const $$Image = createComponent(async ($$result, $$props, $$slots) => {
   return renderTemplate`${maybeRenderHead()}<img${addAttribute(image.src, "src")}${spreadAttributes(additionalAttributes)}${spreadAttributes(image.attributes)}>`;
 }, "C:/Users/aguan/Documents/TOMAS/NEOARTS/NeoArts-WebTools/NeoArts-WebTools/node_modules/astro/components/Image.astro", void 0);
 
-const $$Astro = createAstro("https://neoarts.github.io");
+const $$Astro = createAstro();
 const $$Picture = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$Picture;
@@ -1010,7 +1010,7 @@ const $$Picture = createComponent(async ($$result, $$props, $$slots) => {
   })} <img${addAttribute(fallbackImage.src, "src")}${spreadAttributes(imgAdditionalAttributes)}${spreadAttributes(fallbackImage.attributes)}> </picture>`;
 }, "C:/Users/aguan/Documents/TOMAS/NEOARTS/NeoArts-WebTools/NeoArts-WebTools/node_modules/astro/components/Picture.astro", void 0);
 
-const imageConfig = {"service":{"entrypoint":"astro/assets/services/sharp","config":{}},"domains":[],"remotePatterns":[]};
+const imageConfig = {"service":{"entrypoint":"@astrojs/vercel/build-image-service","config":{"sizes":[640,750,828,1080,1200,1920,2048,3840],"domains":[],"remotePatterns":[]}},"domains":[],"remotePatterns":[]};
 					const getImage = async (options) => await getImage$1(options, imageConfig);
 
 const fnv1a52 = (str) => {

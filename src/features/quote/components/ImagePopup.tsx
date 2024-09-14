@@ -4,9 +4,6 @@ import FormProducts from './FormProducts';
 import ImgContainer from './ImgContainer';
 
 function ImagePopup({ setOpen, open, img, handleImageChange } : { setOpen: React.Dispatch<React.SetStateAction<boolean>>, open: boolean, img: string, handleImageChange: any }) {
-    useEffect(() => {
-        console.log(img)
-    }, [img])
     return (
         <div id="details-modal" tabIndex={-1} aria-hidden="true" className={`${!open && "hidden"} overflow-y-auto overflow-x-hidden bg-opacity-80 bg-black fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}>
             <div className="relative p-4 w-full max-w-2xl max-h-full">

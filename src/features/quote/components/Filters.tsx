@@ -1,51 +1,36 @@
-import React, { useEffect } from 'react'
 import Input from '../../../shared/ui/Input'
-import Dropdown from '../../../shared/ui/Dropdown'
 
-function Filters({ quoteGeneralData, setDate, setClient, setNumber } : { quoteGeneralData: any, setDate: any, setClient: any, setNumber: any }) {
-    
-    useEffect(() => {
-        console.log(quoteGeneralData)
-    }, [quoteGeneralData])
-
+function Filters({ currentQuote, setDate, setClient, setNumber, vertical } : { currentQuote: any, setDate: any, setClient: any, setNumber: any, vertical?: boolean }) {
     return (
-        <form className="flex items-start gap-2">
-            <div className='w-64'>
+        <form className={`flex ${vertical && "flex-col"} items-start gap-2`}>
+            <div className={`${vertical ? "w-full" : "w-64"}`}>
                 <Input
                     type="date"
                     label="Fecha"
                     id="quote-date"
-                    value={quoteGeneralData.date}
+                    value={currentQuote?.date}
                     labelPosition="top"
                     onInput={setDate}
                 />
             </div>
-            <div className='w-64'>
+            <div className={`${vertical ? "w-full" : "w-64"}`}>
                 <Input
                     type="text"
                     label="Cotización"
                     id="quote-number"
                     labelPosition="top"
                     placeholder='000-000-000'
-                    value={quoteGeneralData.number}
+                    value={currentQuote?.number}
                     onInput={setNumber}
                 />
             </div>
-            <div className='w-64'>
-                {/* <Dropdown 
-                    options={["CASA LUKER"]} 
-                    label="Cliente"
-                    id="quote-client"
-                    labelPosition="top"
-                    value={quoteGeneralData.client}
-                    setValue={setClient}
-                /> */}
+            <div className={`${vertical ? "w-full" : "w-64"}`}>
                 <Input
                     type="text"
                     label="Cliente"
                     id="quote-client"
                     labelPosition="top"
-                    value={quoteGeneralData.client}
+                    value={currentQuote?.client}
                     onInput={(e: any) => setClient(e.target.value)}
                 />
             </div>

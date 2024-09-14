@@ -53,7 +53,7 @@ export const generateInvoice = (invoice: Invoice) => {
     doc.DownloadPdf(`Cuenta de cobro ${invoice.company} ${getSpanishFormattedDate()}.pdf`);
 };
 
-export const generateQuote = (quoteGeneralData: any, products: Product[]) => {
+export const generateQuote = (quote: Quote) => {
     const doc = new PdfProvider();
     
     doc.SetMargin(60);
@@ -63,10 +63,10 @@ export const generateQuote = (quoteGeneralData: any, products: Product[]) => {
     doc.AddLine(`${getSpanishFormattedDate()}`);
     doc.AddBlankLines(1);
     doc.AddLine("Señores");
-    doc.AddLine(quoteGeneralData.client);
+    doc.AddLine(quote.client);
     doc.AddLine("Bogotá");
     doc.AddBlankLines(1);
-    doc.AddHeader6("REF: VPM-" + quoteGeneralData.number);
+    doc.AddHeader6("REF: VPM-" + quote.number);
     doc.AddBlankLines(1);
     doc.AddLine("Tenemos el agrado de cotizar las siguientes referencias");
     doc.AddBlankLines(1);
@@ -79,9 +79,9 @@ export const generateQuote = (quoteGeneralData: any, products: Product[]) => {
             {text: "VALOR UN", width: 0.2}
         ],
         [
-            ...products.map(product => [product.name, product.markType, "", product.quantity.toString(), `$${addThousandSeparator(product.sellPrice)} COP`])
+            ...quote.products.map(product => [product.name, product.markType, "", product.quantity.toString(), `$${addThousandSeparator(product.sellPrice)} COP`])
         ]
-    , [...products.map((x:any) => x.image.height)], products);
+    , [...quote.products.map((x:any) => x.image.height)], quote.products);
 
     function addThousandSeparator(value: number): string {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -104,7 +104,7 @@ export const generateQuote = (quoteGeneralData: any, products: Product[]) => {
     doc.AddSign(quoteTemplate.sign, "PNG", 60, 220, 80);
     
     doc.AddTemplate();
-    doc.DownloadPdf(`Cotización ${quoteGeneralData.client} ${"REF: VPM-" + quoteGeneralData.number}.pdf`);
+    doc.DownloadPdf(`Cotización ${quote.client} ${"REF: VPM-" + quote.number}.pdf`);
 };
 
 export const templates = [

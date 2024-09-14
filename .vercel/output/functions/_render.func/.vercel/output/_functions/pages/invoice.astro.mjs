@@ -1,11 +1,11 @@
 /* empty css                                     */
 import { c as createComponent, r as renderTemplate, a as renderComponent, m as maybeRenderHead } from '../chunks/astro/server_B0HlvySp.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_B0g-I8HC.mjs';
+import { $ as $$Layout } from '../chunks/Layout_BJlcU3KQ.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import React, { useEffect } from 'react';
 import { I as Input, B as Button } from '../chunks/Input_CLPAG-wE.mjs';
-import { g as generateInvoice, t as templates } from '../chunks/invoiceUtils_CfpSvSIY.mjs';
+import { g as generateInvoice, t as templates } from '../chunks/invoiceUtils_zT-0ixQG.mjs';
 export { renderers } from '../renderers.mjs';
 
 function Dropdown({ options, label, id, labelPosition, value, setValue, placeholder, className }) {

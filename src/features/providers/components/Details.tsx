@@ -14,7 +14,6 @@ function Details({ showPopup, setShowPopup, providerDetails } : {showPopup:boole
     }, [providerDetails])
 
     const handleValueChange = (e:any) => {
-        console.log(provider)
         setProvider({...provider, [e.target.id.split("-")[1]]: e.target.value})
     }
 

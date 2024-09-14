@@ -1,119 +1,96 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, type Dispatch, type SetStateAction } from 'react'
 import Details from './Details'
-import CurrentProductprovider from './CurrentProductContext'
 import FormProducts from './FormProducts'
+import { setProductAutomatedFields } from '../services/ProductCalc'
+import { emptyProduct } from '../constants/emptyProducts'
 
-function QuoteTable({ products, setProducts } : { products: Product[], setProducts: any }) {
+function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, setCurrentQuote: Dispatch<SetStateAction<Quote>> }) {
 
     const [openDetails, setOpenDetails] = React.useState(false)
-    const [providers, setProviders] = React.useState([] as any)
     const [currentProduct, setCurrentProduct] = React.useState({} as { product: Product, index: number })
 
-    const emptyProduct = {
-        id: 0,
-        name: '',
-        markCost: 0,
-        markType: '',
-        otherCost: 0,
-        price: 0,
-        profit: 0,
-        provider: '',
-        providerDiscount: 0,
-        quantity: 0,
-        sellPrice: 0,
-        totalCost: 0,
-        totalValue: 0,
-        image: { base64String: '', height: 0 },
-        unitPrice: 0
-    }
-
     useEffect(() => {
-        const savedProdcts = localStorage.getItem('products')
-        if(savedProdcts && JSON.parse(savedProdcts).length > 0) {
-            setProducts(JSON.parse(savedProdcts))
+        if(currentQuote.id) saveToLocalStorage();
+    }, [currentQuote])
+
+    const handleValueChange = (product: Product) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const updatedProduct = {
+            ...product,
+            [e.target.id.split("-")[1]]: e.target.value
         }
-    }, [])
-
-    useEffect(() => {
-        const data = localStorage.getItem('providers');
-        if(data) {
-            setProviders(JSON.parse(data))
+        setProductAutomatedFields(updatedProduct);
+        
+        updateProduct(updatedProduct);
+    }
+    
+    const onImageChange = (product: Product) => (imageObj: DocImage) => {
+        const updatedProduct = {
+            ...product,
+            image: imageObj
         }
-    }, [])
-
-    const handleValueChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const updatedProducts = [...products];
         
-        updatedProducts[index] = { ...updatedProducts[index], [e.target.id.split("-")[1]]: e.target.value };
+        updateProduct(updatedProduct);
+    }
+    
+    const updateProduct = (updatedProduct: Product) =>
+    {
+        const updatedProducts = currentQuote.products.map((product, i) => product.id === updatedProduct.id ? updatedProduct : product)
 
-        calculateAutoFields(updatedProducts, index);
-        
-        setCurrentProduct({ product: updatedProducts[index], index })
-        setProducts(updatedProducts);
-        saveToLocalStorage(updatedProducts)
+        setCurrentQuote((quote) => ({
+            ...quote,
+            products: updatedProducts
+        }));
     }
 
-    const calculateAutoFields = (updatedProducts: Product[], index: number) => {
-        const product = updatedProducts[index];
-        
-        const provider = providers.find((p:any) => p.name === product.provider);
-        console.log(provider)
-        product.providerDiscount = provider ? provider.discount : product.providerDiscount;
+    const saveToLocalStorage = () => {
+        localStorage.setItem('currentQuote', JSON.stringify(currentQuote))
 
-        let price : number = product.unitPrice - Number(product.unitPrice * Number(product.providerDiscount));
-        const totalUnitsPrice = product.unitPrice * product.quantity;
-
-        if(provider && provider.wholesaleDiscount.length > 0) {
-            const discounts = provider.wholesaleDiscount.sort((a: any, b: any) => b.amount - a.amount);
-
-            for (let i = 0; i < discounts.length; i++) {
-                const w = discounts[i];
-                console.log(totalUnitsPrice, w.amount)
-                if(totalUnitsPrice >= w.amount) {
-                    price = product.unitPrice * (1 - w.discount);
-                    break;
-                }
-            }
-        }
-        
-        const totalCost = Number(product.unitPrice.toString()) + Number(product.markCost.toString()) + Number(product.otherCost.toString());
-        const sellPrice = Math.round(product.profit ? (totalCost / (product.profit/100)) : totalCost);
-        const totalValue = Math.round(product.quantity * sellPrice);
-
-        updatedProducts[index] = { ...updatedProducts[index], totalCost, sellPrice, totalValue, price };
-        setProducts(updatedProducts);
-    }
-
-    const saveToLocalStorage = (products:any) => {
-        localStorage.setItem('products', JSON.stringify(products))
+        const quotes = localStorage.getItem('quotes')
+        const parsedQuotes = quotes ? JSON.parse(quotes) as Quote[] : []
+        const updatedQuotes = parsedQuotes.map((q) => q.id === currentQuote.id ? currentQuote : q)
+        localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
     }
 
     const handleAddRow = () => {
-        saveToLocalStorage([...products, emptyProduct])
-        setProducts([...products, emptyProduct])
+        const newProduct = {...emptyProduct, id: currentQuote.products[currentQuote.products.length - 1].id + 1};
+        
+        setCurrentQuote((quote) => ({
+            ...quote,
+            products: [...quote.products, newProduct]
+        }));
     }
 
     const handleDeleteRow = (index: number) => {
-        const newProducts = products.filter((service, i) => i !== index)
-
+        const newProducts = currentQuote.products.filter((service, i) => i !== index)
+        console.log(newProducts)
         if(newProducts.length === 0) {
-            newProducts.push(emptyProduct)
+            setCurrentQuote((quote) => ({
+                ...quote,
+                products: [emptyProduct]
+            }));
+            return;
         }
 
-        saveToLocalStorage(newProducts)
-        setProducts(newProducts)
+        setCurrentQuote((quote) => ({
+            ...quote,
+            products: newProducts
+        }));
     }
 
     const handleOpenDetails = (index: number) => {
-        setCurrentProduct({ product: products[index], index })
+        setCurrentProduct({ product: currentQuote.products[index], index })
         setOpenDetails(true)
     }
 
     return (
         <div>
-            <CurrentProductprovider product={currentProduct.product} index={currentProduct.index} handleValueChange={handleValueChange}>
-                <Details setOpenDetails={setOpenDetails} openDetails={openDetails} />
-            </CurrentProductprovider>
+            <Details 
+                openDetails={openDetails} 
+                setOpenDetails={setOpenDetails} 
+                product={currentProduct.product}
+                handleValueChange={handleValueChange}
+                onImageChange={onImageChange}
+            />
             <div className='w-[calc(100vw-496px)] overflow-scroll py-5'>
             <div className="mx-auto w-full flex flex-col gap-1">
                 <div className='flex w-full rounded-lg'>
@@ -133,14 +110,16 @@ function QuoteTable({ products, setProducts } : { products: Product[], setProduc
                     <div className='min-w-48 px-5 py-2 font-bold bg-white'>Imagen</div>
                 </div>
                 {
-                    products.map((product, index) => {
+                    currentQuote.products?.map((product, index) => {
                         return (
                             <div className='flex w-full rounded-lg relative'>
-                                <CurrentProductprovider product={product} index={index} handleValueChange={handleValueChange}>
-                                    <FormProducts
-                                        key={index}
-                                    />
-                                </CurrentProductprovider>
+                                <FormProducts
+                                    key={index}
+                                    product={product}
+                                    handleValueChange={handleValueChange}
+                                    onImageChange={onImageChange}
+                                    index={index}
+                                />
                                 <div className='fixed right-10 z-10 w-12 h-12 bg-white p-2'>
                                     <div 
                                         className='w-8 h-8 bg-red-500 p-2 hover:bg-red-700 cursor-pointer rounded-md'

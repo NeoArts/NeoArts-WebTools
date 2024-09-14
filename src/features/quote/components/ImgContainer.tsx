@@ -1,33 +1,29 @@
-import React, { useEffect } from 'react'
-import Button from '../../../shared/ui/Button';
+import React from 'react'
 
 function ImgContainer({ imgData, setImgData } : { imgData: string, setImgData: any }) {
 
     
     const [focused, setFocused] = React.useState(false)
 
-    useEffect(() => {
-
-    }, [])
-
     const pasteImg = (e:any) => {
         if(!e.clipboardData) return false; 
-
+        
         var img = e.clipboardData.items[0];
-
+        
         if(!img) return false;
-
-        if (img.type.indexOf("image") == -1) return;
+        
+        if (!img.type.includes("image")) return;
+        
         var imgObj = img.getAsFile();
         var reader = new FileReader();
 
         reader.onload = async function (event: any) {
             const base64String = event.target.result;
             const height = await calculateHeight(base64String, 117)
-
+            
             setImgData({ base64String, height }); 
-        };
-
+        }
+        
         reader.readAsDataURL(imgObj);
     }
 

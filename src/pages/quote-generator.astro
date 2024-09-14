@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Quotes from "../features/quote/components/Quotes";
+import Quote from "../features/quote/components/Quote.tsx"
 ---
 
 <Layout title="cotizaciones">
     <section>
-        <Quotes client:load />
+        <Quote client:load />
     </section>
 </Layout>

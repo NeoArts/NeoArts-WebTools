@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Button from '../../../shared/ui/Button'
 import FormProducts from './FormProducts';
 import { CurrentProductContext } from './CurrentProductContext';
 import Input from '../../../shared/ui/Input';
+import { setProductAutomatedFields } from '../services/ProductCalc';
 
-function Details({ setOpenDetails, openDetails } : { setOpenDetails: React.Dispatch<React.SetStateAction<boolean>>, openDetails: boolean }) {
+function Details({ setOpenDetails, openDetails, product, handleValueChange, onImageChange } : { setOpenDetails: React.Dispatch<React.SetStateAction<boolean>>, openDetails: boolean, product: Product, handleValueChange:any, onImageChange:any }) {
     
     const [showSacales, setShowScales] = useState(false);
     const [scales, setScales] = React.useState('')
-    const [providers, setProviders] = React.useState([] as any)
     const { index } = useContext(CurrentProductContext);
     
     const handleSave = () => {
@@ -19,68 +19,21 @@ function Details({ setOpenDetails, openDetails } : { setOpenDetails: React.Dispa
         createScales();
     }
 
-    useEffect(() => {
-        const data = localStorage.getItem('providers');
-        if(data) {
-            setProviders(JSON.parse(data))
-        }
-    }, [])
-
     const createScales = () => {
         const products = localStorage.getItem('products');
-        
-        if(!products || products.length === 0) return;
-
-        const productsJson = JSON.parse(products);
-        const currentProduct = productsJson[index];
-
-        if(!currentProduct) return;
-
+        const productsJson = JSON.parse(products || "");
         const scalesArray = scales.split(',');
 
-        scalesArray.forEach((scale: string) => {
-            console.log("scale", scale)
-            const newProduct = getCalculatedProduct({ ...currentProduct, quantity: Number(scale) });
+        scalesArray.forEach((scale: string, index:number) => {
+            let newProduct: Product = {...product, quantity: Number(scale), id: (Number(product.id) + index + 1)};
+            setProductAutomatedFields(newProduct);
             productsJson.push(newProduct);
         })
         
-        console.log("updatedProducts", productsJson)
         localStorage.setItem('products', JSON.stringify(productsJson));
         window.location.reload();
     }
 
-    const getCalculatedProduct = (product: Product) => {;
-        
-        const provider = providers.find((p:any) => p.name === product.provider);
-
-        product.providerDiscount = provider ? provider.discount : 0;
-
-        const unitPrice : number = product.unitPrice - Number(product.unitPrice * Number(product.providerDiscount));
-        const totalUnitsPrice = unitPrice * product.quantity;
-        
-        let price = product.price;
-
-        if(provider && provider.wholesaleDiscount.length > 0) {
-            const discounts = provider.wholesaleDiscount.sort((a: any, b: any) => b.amount - a.amount);
-
-            for (let i = 0; i < discounts.length; i++) {
-                const w = discounts[i];
-                console.log(totalUnitsPrice, w.amount)
-                if(totalUnitsPrice >= w.amount) {
-                    price = unitPrice * (1 - w.discount);
-                    break;
-                }
-            }
-        }
-
-        const totalCost = Number(price.toString()) + Number(product.markCost.toString()) + Number(product.otherCost.toString());
-        const sellPrice = Math.round(product.profit ? (totalCost / (product.profit/100)) : totalCost);
-        const totalValue = Math.round(product.quantity * sellPrice);
-        console.log(Number(product.price.toString()) + " " + Number(product.markCost.toString()) + " " + Number(product.otherCost.toString()));
-
-        product = { ...product, totalCost, sellPrice, totalValue, price };
-        return product;
-    }
 
     return (
         <div id="details-modal" tabIndex={-1} aria-hidden="true" className={`${!openDetails && "hidden"} overflow-y-auto overflow-x-hidden bg-opacity-80 bg-black fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}>
@@ -118,7 +71,13 @@ function Details({ setOpenDetails, openDetails } : { setOpenDetails: React.Dispa
                                     labelPosition={'top'}
                                 />    
                             </div> : 
-                            <FormProducts openDetails={openDetails} />
+                            <FormProducts 
+                                openDetails={openDetails} 
+                                index={index}
+                                product={product}
+                                handleValueChange={handleValueChange}
+                                onImageChange={onImageChange}
+                            />
                         }
                     </div>
                     <div className="flex items-center justify-end p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">

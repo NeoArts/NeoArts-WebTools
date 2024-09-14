@@ -1,0 +1,17 @@
+export const emptyProduct = {
+    id: 0,
+    name: '',
+    markCost: 0,
+    markType: '',
+    provider: '',
+    providerDiscount: 0,
+    cost: 0,
+    quantity: 0,
+    costOff: 0,
+    otherCost: 0,
+    sellPrice: 0,
+    totalCost: 0,
+    totalValue: 0,
+    profit: 0,
+    image: { base64String: '', height: 0 },
+}

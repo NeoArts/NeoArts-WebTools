@@ -8,7 +8,6 @@
         const [selectedCell, setCell] = React.useState({ x: 0, y: 0 })
 
         function setSelectedCell({ x, y } : { x: number, y: number }) {
-            console.log(`Cell selected at x: ${x} and y: ${y}`)
             setCell({ x, y })
         }
 

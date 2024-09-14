@@ -39,10 +39,10 @@ function ProvidersSection() {
         <div className='flex flex-col gap-5'>
             <Details showPopup={showPopup} setShowPopup={setShowPopup} providerDetails={providerDetails} />
             {providers && providers.length > 0 ?
-                <div className='flex gap-5'>
+                <div className='grid grid-cols-2 gap-5'>
                     {
                         providers.map((provider, index) => (
-                            <div key={index} className='w-1/2 flex items-center justify-between p-5 bg-white rounded-lg'>
+                            <div key={index} className='flex items-center justify-between p-5 bg-white rounded-lg'>
                                 <div className='flex flex-col gap-5'>
                                     <p className='font-bold'>{provider.name}</p>
                                     <p>{(provider.discount * 100).toFixed(2)}%</p>

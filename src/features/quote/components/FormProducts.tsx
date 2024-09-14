@@ -1,31 +1,20 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Input from '../../../shared/ui/Input'
-import { CurrentProductContext } from './CurrentProductContext'
 import TextArea from '../../../shared/ui/TextArea'
 import ImgContainer from './ImgContainer';
 import Button from '../../../shared/ui/Button';
-import Details from './Details';
 import ImagePopup from './ImagePopup';
-import Dropdown from '../../../shared/ui/Dropdown';
 
-function FormProducts( {openDetails } : { openDetails?: boolean }) {
-    
-    const { product, index, handleValueChange } = useContext(CurrentProductContext);
+function FormProducts( { product, index, handleValueChange, onImageChange, openDetails } : { product: Product, index:number, handleValueChange:any, onImageChange: any, openDetails?: boolean }) {
 
-    const [imgData, setImgData] = React.useState({} as DocImage)
     const [showImage, setShowImage] = React.useState(false)
-    const [providers, setProviders] = React.useState([] as any)
 
     useEffect(() => {
-        const data = localStorage.getItem('providers');
-        if(data) {
-            setProviders(JSON.parse(data))
-        }
-    }, [])
+        
+    }, [product])
 
     const handleImageChange = (value: DocImage) => {
-        handleValueChange(index)({ target: { id: 'product-image', value: imgData } })
-        setImgData(value)
+        onImageChange(product)(value)
     }
 
     return (
@@ -37,7 +26,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="text"
                     id={`product-name-${index}`}
                     value={product.name}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Nombre'
                     label={openDetails ? 'Nombre' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -45,7 +34,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                 <TextArea
                     id={`product-name-${index}`}
                     value={product.name}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Nombre'
                     label='Nombre'
                     labelPosition='top'
@@ -58,7 +47,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="text"
                     id={`product-markType-${index}`}
                     value={product.markType}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Tipo de Marca'
                     label={openDetails ? 'Tipo de Marca' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -70,7 +59,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="text"
                     id={`product-provider-${index}`}
                     value={product.provider}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Proveedor'
                     label={openDetails ? 'Proveedor' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -82,7 +71,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="text"
                     id={`product-providerDiscount-${index}`}
                     value={product.providerDiscount?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='0.4'
                     label={openDetails ? 'Descuento Proveedor' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -92,9 +81,9 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                 <Input
                     key={index} 
                     type="number"
-                    id={`product-unitPrice-${index}`}
-                    value={product.unitPrice?.toString()}
-                    onInput={handleValueChange(index)}
+                    id={`product-cost-${index}`}
+                    value={product.cost?.toString()}
+                    onInput={handleValueChange(product)}
                     placeholder='Costo'
                     label={openDetails ? 'Costo' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -106,7 +95,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="number"
                     id={`product-quantity-${index}`}
                     value={product.quantity?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Cantidad'
                     label={openDetails ? 'Cantidad' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -116,9 +105,9 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                 <Input
                     key={index} 
                     type="number"
-                    id={`product-price-${index}`}
-                    value={product.price?.toString()}
-                    onInput={handleValueChange(index)}
+                    id={`product-costOff-${index}`}
+                    value={product.costOff?.toString()}
+                    onInput={handleValueChange(product)}
                     placeholder='Costo dto'
                     disabled={true}
                     label={openDetails ? 'Costo dto' : ''}
@@ -131,7 +120,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="number"
                     id={`product-markCost-${index}`}
                     value={product.markCost?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Marca'
                     label={openDetails ? 'Marca' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -143,7 +132,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="number"
                     id={`product-otherCost-${index}`}
                     value={product.otherCost?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Otros Costos'
                     label={openDetails ? 'Otros Costos' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
@@ -155,7 +144,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="number"
                     id={`product-totalCost-${index}`}
                     value={product.totalCost?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Costo Total'
                     disabled={true}
                     label={openDetails ? 'Costo Total' : ''}
@@ -168,7 +157,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="number"
                     id={`product-sellPrice-${index}`}
                     value={product.sellPrice?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Precio de Venta'
                     disabled={true}
                     label={openDetails ? 'Precio de Venta' : ''}
@@ -181,7 +170,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="number"
                     id={`product-totalValue-${index}`}
                     value={product.totalValue?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Valor Total'
                     disabled={true}
                     label={openDetails ? 'Valor Total' : ''}
@@ -194,7 +183,7 @@ function FormProducts( {openDetails } : { openDetails?: boolean }) {
                     type="number"
                     id={`product-profit-${index}`}
                     value={product.profit?.toString()}
-                    onInput={handleValueChange(index)}
+                    onInput={handleValueChange(product)}
                     placeholder='Rentabilidad'
                     label={openDetails ? 'Rentabilidad' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}

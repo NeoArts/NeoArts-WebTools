@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import Button from '../../../shared/ui/Button';
 import NewQuotePopup from './NewQuotePopup';
+import { deleteQuote, getQuotes, setCurrentQuote } from '../services/QuoteController';
 
 function Quotes() {
 
@@ -8,11 +9,9 @@ function Quotes() {
     const [openDetails, setOpenDetails] = React.useState(false)
 
     useEffect(() => {
-        const savedQuotes = localStorage.getItem('quotes')
-        
-        if(!savedQuotes || JSON.parse(savedQuotes).length === 0) return;
-        
-        setQuotes(JSON.parse(savedQuotes))
+        getQuotes().then((quotes) => {
+            setQuotes(quotes)
+        });
     }, [])
 
     const handleCreateNewQuote = () => {
@@ -20,10 +19,16 @@ function Quotes() {
     }
 
     const handleSetCurrentQuote = (quote: Quote) => {
-        console.log(JSON.stringify(quote))
-        localStorage.setItem('currentQuote', JSON.stringify(quote))
-        
-        window.location.href = '/quote-generator'
+        localStorage.setItem('currentQuote', quote.id);
+        window.location.href = `/quote/quote-generator`
+    }
+
+    const handleDeleteQuote = (id: string) => {
+        if(confirm("Estás segur@ de borrar esta cotización"))
+        {
+            deleteQuote(id);
+            window.location.reload();
+        }
     }
 
     return (
@@ -41,16 +46,25 @@ function Quotes() {
                     .sort((a: Quote, b: Quote) => Number(b.number) - Number(a.number))
                     .map((quote: Quote) => (
                         <div 
-                            className='cursor-pointer p-3 bg-white border border-gray-300 rounded-lg' 
+                            className='flex justify-between w-full p-3 bg-white border border-gray-300 rounded-lg' 
                             key={quote.id}
-                            onClick={() => handleSetCurrentQuote(quote)}
                         >
-                            <div className='flex w-full justify-between'>
+                            <div className='w-full cursor-pointer' onClick={() => handleSetCurrentQuote(quote)}>
                                 <h2 className='font-bold text-2xl'>{quote.client}</h2>
-                                <div>{quote.date}</div>
                             </div>
-                            <div className='flex w-full justify-end text-gray-600'>
-                                <small>{quote.number}</small>
+                            <div className='w-44 flex items-center gap-5 text-gray-600'>
+                                <div>
+                                    <div>{quote.date}</div>
+                                    <small>{quote.number}</small>
+                                </div>
+                                <div>
+                                    <div 
+                                        className='p-1 bg-black w-8 cursor-pointer'
+                                        onClick={() => handleDeleteQuote(quote.id)}
+                                    >
+                                        <img src="icons/trash.svg" alt="" />
+                                    </div>
+                                </div> 
                             </div>
                         </div>
                     ))}

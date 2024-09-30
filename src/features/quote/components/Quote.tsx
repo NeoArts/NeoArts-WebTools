@@ -4,23 +4,21 @@ import QuoteTable from './QuoteTable'
 import Button from '../../../shared/ui/Button'
 import { generateQuote } from '../../invoice/services/invoiceUtils'
 import { emptyProduct } from '../constants/emptyProducts'
+import { getQuote } from '../services/QuoteController'
 
 function Quote() {
 
     const [currentQuote, setCurrentQuote] = React.useState({} as Quote)
 
     useEffect(() => {
-        const currentQuote = localStorage.getItem('currentQuote')
+        const quoteId = localStorage.getItem('currentQuote')
 
-        if(currentQuote) {
-            const quote = JSON.parse(currentQuote)
-            console.log(quote)
-            if(quote.products.length === 0) {
-                quote.products.push(emptyProduct)
-            }
-
-            setCurrentQuote(quote)
+        if(quoteId){
+            getQuote(quoteId).then((data) => {
+                setCurrentQuote(data);
+            });
         }
+
     }, [])
 
     const setDate = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +43,7 @@ function Quote() {
     }
 
     const handleQuoteGenerator = () => {
+        console.log(currentQuote)
         generateQuote(currentQuote)
     }
 
@@ -56,7 +55,7 @@ function Quote() {
                 setNumber={setNumber}
                 setClient={setClient}
             />
-            <div className='h-[calc(100vh-240px)] overflow-scroll'>
+            <div className='overflow-scroll relative'>
                 <QuoteTable currentQuote={currentQuote} setCurrentQuote={setCurrentQuote} />
             </div>
             <Button text='Generar cotización' onClick={handleQuoteGenerator} />

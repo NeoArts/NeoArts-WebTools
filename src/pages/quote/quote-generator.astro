@@ -1,0 +1,10 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Quote from "../../features/quote/components/Quote.tsx"
+---
+
+<Layout title={`Quote generator`}>
+    <section>
+        <Quote client:load />
+    </section>
+</Layout>

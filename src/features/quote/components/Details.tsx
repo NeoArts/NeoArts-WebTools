@@ -4,8 +4,23 @@ import FormProducts from './FormProducts';
 import { CurrentProductContext } from './CurrentProductContext';
 import Input from '../../../shared/ui/Input';
 import { setProductAutomatedFields } from '../services/ProductCalc';
+import { createNewQuote, getQuote, updateQuote } from '../services/QuoteController';
 
-function Details({ setOpenDetails, openDetails, product, handleValueChange, onImageChange } : { setOpenDetails: React.Dispatch<React.SetStateAction<boolean>>, openDetails: boolean, product: Product, handleValueChange:any, onImageChange:any }) {
+function Details(
+{ 
+    setOpenDetails, 
+    openDetails, 
+    product, 
+    handleValueChange, 
+    onImageChange,
+} : 
+{
+    setOpenDetails: React.Dispatch<React.SetStateAction<boolean>>, 
+    openDetails: boolean, 
+    product: Product, 
+    handleValueChange:any, 
+    onImageChange:any,
+}) {
     
     const [showSacales, setShowScales] = useState(false);
     const [scales, setScales] = React.useState('')
@@ -19,19 +34,24 @@ function Details({ setOpenDetails, openDetails, product, handleValueChange, onIm
         createScales();
     }
 
-    const createScales = () => {
-        const products = localStorage.getItem('products');
-        const productsJson = JSON.parse(products || "");
+    const createScales = async() => {
+        const currentQuote = localStorage.getItem('currentQuote');
+        
+        const quoteJson: Quote = await getQuote(currentQuote || "");
         const scalesArray = scales.split(',');
-
+        
         scalesArray.forEach((scale: string, index:number) => {
             let newProduct: Product = {...product, quantity: Number(scale), id: (Number(product.id) + index + 1)};
             setProductAutomatedFields(newProduct);
-            productsJson.push(newProduct);
+            quoteJson.products.push(newProduct);
         })
         
-        localStorage.setItem('products', JSON.stringify(productsJson));
-        window.location.reload();
+        updateQuote(quoteJson).then((r) => {
+            window.location.reload();
+        })
+        .catch((e) => {
+            console.log(e)
+        });
     }
 
 

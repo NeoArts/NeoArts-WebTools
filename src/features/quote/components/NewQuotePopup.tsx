@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import Button from '../../../shared/ui/Button'
 import Filters from './Filters'
+import { createNewQuote } from '../services/QuoteController'
 
 function NewQuotePopup( { openDetails, setOpenDetails } : { openDetails: boolean, setOpenDetails: React.Dispatch<React.SetStateAction<boolean>> }) {
     
@@ -9,7 +10,7 @@ function NewQuotePopup( { openDetails, setOpenDetails } : { openDetails: boolean
         date: new Date().toISOString().split("T")[0],
         number: '',
         client: '',
-        products: []
+        products: [{ id: 0 }]
     } as Quote)
 
     useEffect(() => {
@@ -47,12 +48,14 @@ function NewQuotePopup( { openDetails, setOpenDetails } : { openDetails: boolean
     }
 
     const saveToLocalStorage = () => {
-        const quotes = localStorage.getItem('quotes')
-
-        const parsedQuotes = quotes ? JSON.parse(quotes) as Quote[] : []
-        parsedQuotes.push(quote)
-        localStorage.setItem('quotes', JSON.stringify(parsedQuotes))
-        window.location.reload()
+        createNewQuote(quote)
+        .then((result) => {
+            window.location.reload()
+        })
+        .catch((e) => {
+            console.log(e);
+            alert('Ha ocurrido un error, por favor vuelve a intentar')
+        })
     }
     
     return (

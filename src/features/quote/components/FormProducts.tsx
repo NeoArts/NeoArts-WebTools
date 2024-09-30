@@ -5,7 +5,21 @@ import ImgContainer from './ImgContainer';
 import Button from '../../../shared/ui/Button';
 import ImagePopup from './ImagePopup';
 
-function FormProducts( { product, index, handleValueChange, onImageChange, openDetails } : { product: Product, index:number, handleValueChange:any, onImageChange: any, openDetails?: boolean }) {
+function FormProducts( 
+{ 
+    product, 
+    index, 
+    handleValueChange, 
+    onImageChange, 
+    openDetails,
+} : 
+{ 
+    product: Product, 
+    index:number, 
+    handleValueChange:any, 
+    onImageChange: any, 
+    openDetails?: boolean,
+}) {
 
     const [showImage, setShowImage] = React.useState(false)
 
@@ -19,7 +33,7 @@ function FormProducts( { product, index, handleValueChange, onImageChange, openD
 
     return (
         product && <div className={`${!openDetails ? "flex-row" : "flex-col gap-2"} w-full rounded-lg flex relative`}>
-            <ImagePopup open={showImage} setOpen={setShowImage} img={product.image.base64String} handleImageChange={handleImageChange} />
+            <ImagePopup open={showImage} setOpen={setShowImage} img={product.image?.base64String} handleImageChange={handleImageChange} />
             <div className={`${openDetails ? "w-full" : "min-w-48 max-w-48 bg-white"} px-3 font-bold`}>
                 {!openDetails ? <Input
                     key={index} 
@@ -189,7 +203,7 @@ function FormProducts( { product, index, handleValueChange, onImageChange, openD
                     labelPosition={openDetails ? 'top' : 'left'}
                 />
             </div>
-            <div className={`${openDetails ? "w-full" : "min-w-48 max-w-48 bg-white"} px-3 font-bold`}>
+            <div className={`${openDetails ? "w-full" : "min-w-48 max-w-48 bg-white"} overflow-scroll px-3 font-bold`}>
                 {openDetails ? <ImgContainer imgData={product.image.base64String} setImgData={handleImageChange} /> : <Button text='Ver' onClick={() => setShowImage(true)} />}
             </div>
         </div>

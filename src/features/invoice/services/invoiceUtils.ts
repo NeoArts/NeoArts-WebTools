@@ -25,8 +25,8 @@ export const generateInvoice = (invoice: Invoice) => {
     doc.AddHeader6("Por el concepto de:");
     doc.AddTable(
         [
-            {text: "Servicio", width: 0.8}, 
-            {text: "Valor", width: 0.2}
+            {text: "Servicio", width: 0.5}, 
+            {text: "Valor", width: 0.3}
         ],
         [
             ...invoice.services.map(service => [service.name, `$${addThousandSeparator(service.value)} COP`]),
@@ -38,15 +38,16 @@ export const generateInvoice = (invoice: Invoice) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+    doc.AddBlankLines(invoice.services.length + 5);
     doc.SetTextColor(135, 135, 135);
     doc.AddLine('Declaro voluntariamente y bajo la gravedad de juramento, que pertenezco al');
     doc.AddLine('régimen simplificado, por lo tanto, de acuerdo al Art 42 del Decreto 3541 de 1983 y');
     doc.AddLine('Art 511 del ET, no estoy obligado a expedir factura de venta');
     doc.SetTextColor(0, 0, 0);
 
-    doc.AddBlankLines(4);
+    doc.AddBlankLines(3);
     doc.AddLine("Cordialmente");
-    doc.AddImage(pdfImages.sign, "PNG", 40, 598, 120, 80);
+    doc.AddImage(pdfImages.sign, "PNG", 40, 588, 120, 80);
     doc.AddBlankLines(6);
     doc.AddLine("Tomás Parra Monroy");
     doc.AddLine("CC 1.001.098.088");

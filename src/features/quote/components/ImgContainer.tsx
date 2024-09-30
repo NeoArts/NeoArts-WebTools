@@ -1,4 +1,5 @@
 import React from 'react'
+import Button from '../../../shared/ui/Button';
 
 function ImgContainer({ imgData, setImgData } : { imgData: string, setImgData: any }) {
 
@@ -44,16 +45,33 @@ function ImgContainer({ imgData, setImgData } : { imgData: string, setImgData: a
         });
     };
 
+    const handleClickPaste = () => {
+        // Focus the hidden textarea so user can paste
+        const hiddenTextarea = document.getElementById("hidden-textarea") as HTMLTextAreaElement;
+        hiddenTextarea?.focus();
+    };
+
     return (
-        <div className='w-full h-full'>
+        <div className='w-full h-full relative'>
+            <div 
+                className='absolute w-6 h-6 p-1 top-0 right-0 bg-black cursor-pointer'
+                onClick={() => setImgData({ base64String: '', height: 0 })}
+            >
+                <img src="../icons/trash.svg" alt="" className='w-full h-full' />
+            </div>
             <p className='pb-2'>Imagen:</p>
             <div
-                className={`${focused && "border border-black"} w-full h-full min-h-48 bg-white rounded-md flex items-center justify-center`}
-                onPaste={pasteImg}
-                onClick={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
+                className={`${focused && "border border-black"} relative w-full mb-10 h-auto min-h-48 bg-white rounded-md flex items-center justify-center`}
             >
-                <img src={imgData} />
+                {imgData ? <img src={imgData} className='rounded-md' /> :
+                <textarea
+                    id="hidden-textarea"
+                    value={""}
+                    onPaste={pasteImg}
+                    onClick={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
+                    className={`${focused && "border border-black"} absolute w-full h-full bg-white rounded-md flex items-center justify-center`}
+                />}
             </div>
         </div>
     )

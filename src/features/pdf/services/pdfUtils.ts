@@ -132,14 +132,14 @@ export class PdfProvider
             willDrawCell: (data) => {
                 if (data.section === 'body') {
                     const rowIndex = data.row.index;
-                    const remainingPageSpace = 760 - data.cell.y - 60;
+                    const remainingPageSpace = 700 - data.cell.y;
                     
                     if (remainingPageSpace < data.row.height) {
                         this.doc.addPage(); 
                         data.cell.y = 120;
                         if(data.cursor) data.cursor.y = 120;
                     }
-
+                    console.log(rowIndex)
                     if(products) this.addImage(data.cell.y, products[rowIndex]);
                 }
             },
@@ -153,7 +153,6 @@ export class PdfProvider
             startY: startY,
             margin: { left: startX, right: startX },
         });
-        
     }
 
     AddTemplate(){

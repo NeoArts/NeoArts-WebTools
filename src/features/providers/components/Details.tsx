@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import Button from '../../../shared/ui/Button'
-import Input from '../../../shared/ui/Input'
+import Button from '../../../shared/ui/components/Button'
+import Input from '../../../shared/ui/components/Input'
 import ProviderDiscountTable from './ProviderDiscountTable'
 
 function Details({ showPopup, setShowPopup, providerDetails } : {showPopup:boolean, setShowPopup:any, providerDetails?:Provider }) {

@@ -1,9 +1,14 @@
 import React from 'react'
 
+type Option = {
+    name: string,
+    value: string,
+}
+
 function Dropdown(
     { options, label, id, labelPosition, value, setValue, placeholder, className } : 
     { 
-        options: string[],
+        options: Option[],
         id: string,
         label?: string,
         labelPosition?: 'top' | 'left'
@@ -21,14 +26,14 @@ function Dropdown(
         <div className={`${className} w-full relative z-10 gap-2 ${labelPosition === 'top' ? "flex-col" : "flex-row items-center"}`}>
             {label && <label htmlFor={id}>{label}:</label>}
             <div 
-                className={`${label && "mt-2"} flex justify-between items-center p-2 cursor-pointer bg-white rounded-md`}
+                className={`${label && "mt-2"} w-full flex items-center p-2 cursor-pointer bg-white rounded-md`}
                 onClick={() => setOpen(!open)}
             >
                 <input
                     type="text"
                     placeholder={placeholder}
                     value={value}
-                    className='cursor-pointer max-w-48 bg-white focus:outline-none'
+                    className='cursor-pointer bg-white focus:outline-none w-full border-none'
                     onChange={(e:any) => setValue(e.target.value)}
                 />
                 <img 
@@ -49,7 +54,7 @@ function Dropdown(
                                     setOpen(false)
                                 }}
                             >
-                                {option}
+                                {option.name}
                             </div>
                         ))
                     }

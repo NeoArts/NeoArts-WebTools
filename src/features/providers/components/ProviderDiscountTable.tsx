@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Input from '../../../shared/ui/Input'
+import Input from '../../../shared/ui/components/Input'
 
 function ProviderDiscountTable({ provider, setProvider } : { provider: Provider, setProvider: any }) {
 

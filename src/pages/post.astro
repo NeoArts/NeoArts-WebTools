@@ -1,0 +1,11 @@
+---
+import Layout from "../layouts/Layout.astro";   
+import PostCreator from "../features/post/Post";
+---
+
+<Layout title="Creador de posts">
+    <div>
+        <h1 class="text-2xl font-bold mb-10">Creador de posts</h1>
+        <PostCreator client:load />
+    </div>
+</Layout>

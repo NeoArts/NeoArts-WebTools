@@ -16,7 +16,7 @@ export class PdfProvider
         this.doc = this.CreateNewPdf();
         this.margin = 0;
         this.font = "";
-        this.currentLine = 120;
+        this.currentLine = 80;
     }
 
     private CreateNewPdf()

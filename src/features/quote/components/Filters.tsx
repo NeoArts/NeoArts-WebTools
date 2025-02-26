@@ -1,4 +1,4 @@
-import Input from '../../../shared/ui/Input'
+import Input from '../../../shared/ui/components/Input'
 
 function Filters({ currentQuote, setDate, setClient, setNumber, vertical } : { currentQuote: any, setDate: any, setClient: any, setNumber: any, vertical?: boolean }) {
     return (

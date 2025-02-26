@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Button from '../../../shared/ui/Button'
+import Button from '../../../shared/ui/components/Button'
 import Filters from './Filters'
 import { createNewQuote } from '../services/QuoteController'
 

@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
-import Button from '../../../shared/ui/Button';
+import Button from '../../../shared/ui/components/Button';
 import NewQuotePopup from './NewQuotePopup';
-import { deleteQuote, getQuotes, setCurrentQuote } from '../services/QuoteController';
+import { deleteQuote, downloadQuote, getQuotes, setCurrentQuote } from '../services/QuoteController';
+import { exportToExcel } from '../services/ExcelServices';
+import JsonUploader from './JsonUploader';
 
 function Quotes() {
 
@@ -31,6 +33,10 @@ function Quotes() {
         }
     }
 
+    const handleExport = (id: string) => {
+        downloadQuote(id);
+    }
+
     return (
         <div className='flex gap-3 flex-col'>
             <NewQuotePopup
@@ -52,10 +58,18 @@ function Quotes() {
                             <div className='w-full cursor-pointer' onClick={() => handleSetCurrentQuote(quote)}>
                                 <h2 className='font-bold text-2xl'>{quote.client}</h2>
                             </div>
-                            <div className='w-44 flex items-center gap-5 text-gray-600'>
+                            <div className='w-96 flex items-center gap-5 text-gray-600'>
                                 <div>
                                     <div>{quote.date}</div>
                                     <small>{quote.number}</small>
+                                </div>
+                                <div>
+                                    <div 
+                                        className='p-1 px-3 bg-green-500 text-white font-bold cursor-pointer'
+                                        onClick={() => handleExport(quote.id)}
+                                    >
+                                        Exportar
+                                    </div>
                                 </div>
                                 <div>
                                     <div 
@@ -72,6 +86,9 @@ function Quotes() {
             }
             <div>
                 <Button text='Crear Nueva cotización' onClick={() => handleCreateNewQuote()} />
+            </div>
+            <div className='my-10'>
+                <JsonUploader />
             </div>
         </div>
     )

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Button from '../../../shared/ui/Button'
+import Button from '../../../shared/ui/components/Button'
 import FormProducts from './FormProducts';
 import ImgContainer from './ImgContainer';
 

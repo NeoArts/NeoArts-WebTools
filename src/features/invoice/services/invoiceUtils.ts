@@ -8,19 +8,18 @@ export const generateInvoice = (invoice: Invoice) => {
     
     doc.SetMargin(60);
     doc.SetFont("Montserrat");
-    doc.AddImage(header, "PNG", 0, 100, 0, 35);
+    doc.AddImage(header, "PNG", 0, 60, 0, 35);
     
     doc.AddHeader6("CUENTA DE COBRO", "white");
     doc.AddBlankLines(3);
     doc.AddLine(`Bogotá D.C. ${getSpanishFormattedDate()}`);
     doc.AddBlankLines(1);
-    doc.AddLine(invoice.company);
-    doc.AddLine("NIT. 900392150-2");
+    doc.AddLine(invoice.company.name);
+    doc.AddLine(`${invoice.company.value.includes("-") ? "NIT" : "CC"}. ${invoice.company.value}`);
     doc.AddBlankLines(1);
     doc.AddHeader6("debe a:");
-    doc.AddBlankLines(1);
-    doc.AddLine("Tomás Parra Monroy (NEO ARTS)");
-    doc.AddLine("NIT. 1.001.098.088-3");
+    doc.AddLine(`Tomás Parra Monroy (NEO ARTS)`);
+    doc.AddLine(`NIT. 1.001.098.088-3`);
     doc.AddBlankLines(2);
     doc.AddHeader6("Por el concepto de:");
     doc.AddTable(
@@ -43,15 +42,23 @@ export const generateInvoice = (invoice: Invoice) => {
     doc.AddLine('Declaro voluntariamente y bajo la gravedad de juramento, que pertenezco al');
     doc.AddLine('régimen simplificado, por lo tanto, de acuerdo al Art 42 del Decreto 3541 de 1983 y');
     doc.AddLine('Art 511 del ET, no estoy obligado a expedir factura de venta');
+
+    doc.AddBlankLines(1);
+    doc.AddLine('CERTIFICO QUE: la prestación de este servicio se realizó de manera personal, por tanto:');
+    doc.AddLine('“Certifico bajo la gravedad de juramento que en el desarrollo de mis actividades');
+    doc.AddLine('de servicios, no tengo contratado o vinculado dos (2) o más trabajadores o contratistas');
+    doc.AddLine('asociados a mi actividad económica por un término superior a 90 días continuos');
+    doc.AddLine('o discontinuos. De acuerdo con lo anterior, solicito para efectos de retención'); 
+    doc.AddLine('en la fuente me sea aplicado del Estatuto Tributario el artículo 383”');
     doc.SetTextColor(0, 0, 0);
 
     doc.AddBlankLines(3);
     doc.AddLine("Cordialmente");
     doc.AddImage(pdfImages.sign, "PNG", 40, 588, 120, 80);
-    doc.AddBlankLines(6);
+    doc.AddBlankLines(3);
     doc.AddLine("Tomás Parra Monroy");
     doc.AddLine("CC 1.001.098.088");
-    doc.DownloadPdf(`Cuenta de cobro ${invoice.company} ${getSpanishFormattedDate()}.pdf`);
+    doc.DownloadPdf(`Cuenta de cobro ${invoice.company.name} ${getSpanishFormattedDate()}.pdf`);
 };
 
 export const generateQuote = (quote: Quote) => {
@@ -71,6 +78,7 @@ export const generateQuote = (quote: Quote) => {
     doc.AddBlankLines(1);
     doc.AddLine("Tenemos el agrado de cotizar las siguientes referencias");
     doc.AddBlankLines(1);
+    console.log(quote.products);
     doc.AddTable(
         [
             {text: "ARTICULO", width: 0.2}, 

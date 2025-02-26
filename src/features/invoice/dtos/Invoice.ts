@@ -1,4 +1,4 @@
 type Invoice = {
-    company: string;
+    company: { name: string, value: string };
     services: Service[];
 }

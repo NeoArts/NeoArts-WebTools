@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
-import Button from '../../../shared/ui/Button'
+import Button from '../../../shared/ui/components/Button'
 import FormProducts from './FormProducts';
 import { CurrentProductContext } from './CurrentProductContext';
-import Input from '../../../shared/ui/Input';
+import Input from '../../../shared/ui/components/Input';
 import { setProductAutomatedFields } from '../services/ProductCalc';
 import { createNewQuote, getQuote, updateQuote } from '../services/QuoteController';
 

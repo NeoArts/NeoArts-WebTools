@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
 import Filters from './Filters'
 import QuoteTable from './QuoteTable'
-import Button from '../../../shared/ui/Button'
+import Button from '../../../shared/ui/components/Button'
 import { generateQuote } from '../../invoice/services/invoiceUtils'
-import { emptyProduct } from '../constants/emptyProducts'
 import { getQuote } from '../services/QuoteController'
 
 function Quote() {
@@ -55,7 +54,7 @@ function Quote() {
                 setNumber={setNumber}
                 setClient={setClient}
             />
-            <div className='overflow-scroll relative'>
+            <div className='overflow-hidden relative'>
                 <QuoteTable currentQuote={currentQuote} setCurrentQuote={setCurrentQuote} />
             </div>
             <Button text='Generar cotización' onClick={handleQuoteGenerator} />

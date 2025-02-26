@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Button from '../../../shared/ui/Button'
+import Button from '../../../shared/ui/components/Button'
 import Details from './Details';
 
 function ProvidersSection() {

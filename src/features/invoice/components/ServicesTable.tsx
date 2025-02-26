@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import Input from '../../../shared/ui/Input'
-import TextArea from '../../../shared/ui/TextArea'
+import Input from '../../../shared/ui/components/Input'
+import TextArea from '../../../shared/ui/components/TextArea'
 
 function ServicesTable({ services, setServices } : { services: Service[], setServices: any }) {
 

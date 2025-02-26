@@ -17,7 +17,7 @@ function Input(
 ) 
 {
     return (
-        <div className={`flex gap-2 ${labelPosition === 'top' ? "flex-col" : "flex-row items-center"}`}>
+        <div className={`w-full flex gap-2 ${labelPosition === 'top' ? "flex-col" : "flex-row items-center"}`}>
             {label && <label htmlFor={id}>{label}:</label>}
             <input 
                 id={id}

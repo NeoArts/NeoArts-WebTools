@@ -1,5 +1,5 @@
 import React from 'react'
-import Button from '../../../shared/ui/Button';
+import Button from '../../../shared/ui/components/Button';
 
 function ImgContainer({ imgData, setImgData } : { imgData: string, setImgData: any }) {
 

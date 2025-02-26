@@ -21,7 +21,7 @@ export const calculateProductDiscount = (product: Product) => {
     const generalDiscount = provider ? provider.discount : product.providerDiscount;
     const wholesomeDiscount = calculateProviderWholesomeDiscount(product, generalDiscount);
     const firstDiscount = product.cost * (1 - generalDiscount);
-
+    console.log('provider', provider);
     return Math.ceil(firstDiscount * (1 - wholesomeDiscount) * 100) / 100;
 }
 

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import Input from '../../../shared/ui/Input'
-import TextArea from '../../../shared/ui/TextArea'
+import Input from '../../../shared/ui/components/Input'
+import TextArea from '../../../shared/ui/components/TextArea'
 import ImgContainer from './ImgContainer';
-import Button from '../../../shared/ui/Button';
+import Button from '../../../shared/ui/components/Button';
 import ImagePopup from './ImagePopup';
 
 function FormProducts( 

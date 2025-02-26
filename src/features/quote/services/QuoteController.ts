@@ -1,3 +1,5 @@
+import { exportToExcel } from "./ExcelServices";
+
 const openIndexedDB = (): Promise<IDBDatabase> => {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open("QuotesDB", 1);
@@ -109,6 +111,30 @@ export const deleteQuote = async (id:string) => {
         };
     });
 };
+
+export const downloadQuote = async (id:string) => {
+    const db = await openIndexedDB();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction("quotes", "readonly");
+        const store = transaction.objectStore("quotes");
+
+        const request = store.get(id); 
+
+        request.onsuccess = (event) => {
+            const Quote: Quote = request.result;
+            console.log("Quote retrieved from IndexedDB:", Quote);
+            exportToExcel({ data: Quote.products, fileName: `${Quote.client}-${Quote.date}` });
+
+            resolve(Quote); 
+        };
+
+        request.onerror = (event) => {
+            console.error("Error retrieving all quotes from IndexedDB:", event);
+            reject(event);
+        };
+    });
+}
 
 export const setCurrentQuote = async (quote: Quote) => {
     const db = await openIndexedDB();

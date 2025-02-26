@@ -1,17 +1,15 @@
 ---
-
+import { MenuOptions } from "../../shared/ui/constants/Menu";
 ---
 
 <nav>
     <ul>
-        <li>
-            <a class="block p-2 cursor-pointer hover:bg-gray-200 rounded-xl" href="/invoice">Cuentas de cobro</a>
-        </li>
-        <li>
-            <a class="block p-2 cursor-pointer hover:bg-gray-200 rounded-xl" href="/quote">Creador de cotizaciones</a>
-        </li>
-        <li>
-            <a class="block p-2 cursor-pointer hover:bg-gray-200 rounded-xl" href="/providers">Proveedores</a>
-        </li>
+        {MenuOptions.map((option) => (
+            option.active && (
+                <li>
+                    <a class="block p-2 cursor-pointer hover:bg-gray-200 rounded-xl" href={option.href}>{option.title}</a>
+                </li>
+            )
+        ))}
     </ul>
 </nav>

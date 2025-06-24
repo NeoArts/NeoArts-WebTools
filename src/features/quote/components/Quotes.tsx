@@ -4,11 +4,13 @@ import NewQuotePopup from './NewQuotePopup';
 import { deleteQuote, downloadQuote, getQuotes, setCurrentQuote } from '../services/QuoteController';
 import { exportToExcel } from '../services/ExcelServices';
 import JsonUploader from './JsonUploader';
+import { Checkbox } from 'flowbite-react';
 
 function Quotes() {
 
     const [quotes, setQuotes] = React.useState([] as Quote[])
     const [openDetails, setOpenDetails] = React.useState(false)
+    const [selectedQuotes, setSelectedQuotes] = React.useState([] as Quote[])
 
     useEffect(() => {
         getQuotes().then((quotes) => {
@@ -37,6 +39,16 @@ function Quotes() {
         downloadQuote(id);
     }
 
+    const handleDelete = () => {
+        selectedQuotes.forEach(quote => {
+            deleteQuote(quote.id);
+        })
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    }
+
     return (
         <div className='flex gap-3 flex-col'>
             <NewQuotePopup
@@ -48,6 +60,29 @@ function Quotes() {
                 <p>No tienes cotizaciones creadas aún</p>
             </div> :
             <div className='flex flex-col gap-5'>
+                <div>
+                    <Button 
+                        text='Eliminar cotizaciones seleccionadas' 
+                        onClick={() => handleDelete()} 
+                        disabled={selectedQuotes.length === 0}
+                    />
+                    <div className="flex items-center mt-10">
+                        <input 
+                            checked={selectedQuotes.length === quotes.length}
+                            id="checked-checkbox" 
+                            type="checkbox" 
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            onChange={(e) => {
+                                if(e.target.checked){
+                                    setSelectedQuotes(quotes)
+                                } else {
+                                    setSelectedQuotes([])
+                                }
+                            }}
+                        />
+                        <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Seleccionar todas las cotizaciones</label>
+                    </div>
+                </div>
                 {quotes
                     .sort((a: Quote, b: Quote) => Number(b.number) - Number(a.number))
                     .map((quote: Quote) => (
@@ -55,6 +90,20 @@ function Quotes() {
                             className='flex justify-between w-full p-3 bg-white border border-gray-300 rounded-lg' 
                             key={quote.id}
                         >
+                            <div>
+                                <input 
+                                    type="checkbox" 
+                                    className="mr-2" 
+                                    checked={selectedQuotes.some(selectedQuote => selectedQuote.id === quote.id)}
+                                    onChange={(e) => {
+                                        if(e.target.checked){
+                                            setSelectedQuotes([...selectedQuotes, quote])
+                                        } else {
+                                            setSelectedQuotes(selectedQuotes.filter(selectedQuote => selectedQuote.id !== quote.id))
+                                        }
+                                    }} 
+                                />
+                            </div>
                             <div className='w-full cursor-pointer' onClick={() => handleSetCurrentQuote(quote)}>
                                 <h2 className='font-bold text-2xl'>{quote.client}</h2>
                             </div>

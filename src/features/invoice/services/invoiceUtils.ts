@@ -20,7 +20,7 @@ export const generateInvoice = (invoice: Invoice) => {
     doc.AddHeader6("debe a:");
     doc.AddLine(`Tomás Parra Monroy (NEO ARTS)`);
     doc.AddLine(`NIT. 1.001.098.088-3`);
-    doc.AddBlankLines(2);
+    doc.AddBlankLines(1);
     doc.AddHeader6("Por el concepto de:");
     doc.AddTable(
         [
@@ -42,8 +42,6 @@ export const generateInvoice = (invoice: Invoice) => {
     doc.AddLine('Declaro voluntariamente y bajo la gravedad de juramento, que pertenezco al');
     doc.AddLine('régimen simplificado, por lo tanto, de acuerdo al Art 42 del Decreto 3541 de 1983 y');
     doc.AddLine('Art 511 del ET, no estoy obligado a expedir factura de venta');
-
-    doc.AddBlankLines(1);
     doc.AddLine('CERTIFICO QUE: la prestación de este servicio se realizó de manera personal, por tanto:');
     doc.AddLine('“Certifico bajo la gravedad de juramento que en el desarrollo de mis actividades');
     doc.AddLine('de servicios, no tengo contratado o vinculado dos (2) o más trabajadores o contratistas');

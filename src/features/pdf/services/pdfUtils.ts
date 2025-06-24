@@ -133,13 +133,13 @@ export class PdfProvider
                 if (data.section === 'body') {
                     const rowIndex = data.row.index;
                     const remainingPageSpace = 700 - data.cell.y;
-                    
                     if (remainingPageSpace < data.row.height) {
                         this.doc.addPage(); 
                         data.cell.y = 120;
                         if(data.cursor) data.cursor.y = 120;
                     }
-                    console.log(rowIndex)
+                    if(products) console.log(products[rowIndex]);
+                    if(rowIndex === -1) console.log(data.cell.y);
                     if(products) this.addImage(data.cell.y, products[rowIndex]);
                 }
             },

@@ -1,11 +1,12 @@
 /* empty css                                     */
 import { c as createComponent, r as renderTemplate, a as renderComponent, m as maybeRenderHead } from '../chunks/astro/server_B0HlvySp.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_BhgJBksv.mjs';
+import { $ as $$Layout } from '../chunks/Layout_BmMRO5Hw.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import React, { useEffect } from 'react';
-import { I as Input, B as Button } from '../chunks/Input_CLPAG-wE.mjs';
-import { g as generateInvoice, t as templates } from '../chunks/invoiceUtils_DwWodwh-.mjs';
+import { B as Button } from '../chunks/Button_DPtSRY6N.mjs';
+import { g as generateInvoice, t as templates } from '../chunks/invoiceUtils_BST1wMil.mjs';
+import { I as Input } from '../chunks/Input_EN3vuD8l.mjs';
 export { renderers } from '../renderers.mjs';
 
 function Dropdown({ options, label, id, labelPosition, value, setValue, placeholder, className }) {
@@ -18,7 +19,7 @@ function Dropdown({ options, label, id, labelPosition, value, setValue, placehol
     /* @__PURE__ */ jsxs(
       "div",
       {
-        className: `${label && "mt-2"} flex justify-between items-center p-2 cursor-pointer bg-white rounded-md`,
+        className: `${label && "mt-2"} w-full flex items-center p-2 cursor-pointer bg-white rounded-md`,
         onClick: () => setOpen(!open),
         children: [
           /* @__PURE__ */ jsx(
@@ -27,7 +28,7 @@ function Dropdown({ options, label, id, labelPosition, value, setValue, placehol
               type: "text",
               placeholder,
               value,
-              className: "cursor-pointer max-w-48 bg-white focus:outline-none",
+              className: "cursor-pointer bg-white focus:outline-none w-full border-none",
               onChange: (e) => setValue(e.target.value)
             }
           ),
@@ -50,7 +51,7 @@ function Dropdown({ options, label, id, labelPosition, value, setValue, placehol
           setValue(option);
           setOpen(false);
         },
-        children: option
+        children: option.name
       },
       index
     )) }) })
@@ -171,15 +172,18 @@ function ServicesTable({ services, setServices }) {
 
 function InvoiceGenerator() {
   useEffect(() => {
-    setCustomer("Ensafe SAS");
+    setCustomer({
+      name: "Ensafe SAS",
+      value: "900392150-2"
+    });
   }, []);
   const [services, setServices] = React.useState([{
     id: 0,
     name: "",
     value: 0
   }]);
-  const [service, setService] = React.useState("");
-  const [customer, setCustomer] = React.useState("");
+  const [service, setService] = React.useState({ name: "", value: "" });
+  const [customer, setCustomer] = React.useState({});
   const handleInvoice = () => {
     const invoice = {
       company: customer,
@@ -192,13 +196,14 @@ function InvoiceGenerator() {
     setServices([{ id: 0, name: "", value: 0 }]);
   };
   const handleServiceTemplate = (service2) => {
+    console.log(service2);
     setService(service2);
-    const template = templates.find((t) => t.name === service2);
+    const template = templates.find((t) => t.name === service2.name);
     if (!template) return;
     setServices([{
       id: 0,
       name: template.description,
-      value: template.company === customer ? template.value : 0
+      value: template.company === customer.name ? template.value : 0
     }]);
   };
   return /* @__PURE__ */ jsx("div", { className: "w-full flex justify-center gap-5", children: /* @__PURE__ */ jsxs("div", { className: "w-full h-[calc(100vh-80px)] flex flex-col justify-between gap-5", children: [
@@ -208,10 +213,23 @@ function InvoiceGenerator() {
           Dropdown,
           {
             id: "customer",
-            value: customer,
+            value: customer.name,
             label: "",
             setValue: handleCustomer,
-            options: ["Ensafe SAS", "Stunnink Walls"],
+            options: [
+              {
+                name: "Ensafe SAS",
+                value: "900392150-2"
+              },
+              {
+                name: "Urbanos Zonas De Creacion Y Construccion SAS",
+                value: "900.180.604-4"
+              },
+              {
+                name: "Leidy Mayerly Oliveros Cobos",
+                value: "1.024.514.405"
+              }
+            ],
             placeholder: "Selecciona un cliente"
           }
         ),
@@ -219,10 +237,23 @@ function InvoiceGenerator() {
           Dropdown,
           {
             id: "service",
-            value: service,
+            value: service.name,
             label: "",
             setValue: handleServiceTemplate,
-            options: ["Manejo de redes", "Identidad Corporativa", "Página web"],
+            options: [
+              {
+                name: "Manejo de redes",
+                value: ""
+              },
+              {
+                name: "Identidad Corporativa",
+                value: "9"
+              },
+              {
+                name: "Página web",
+                value: ""
+              }
+            ],
             placeholder: "Selecciona un servicio"
           }
         )
@@ -241,10 +272,10 @@ function InvoiceGenerator() {
 
 const prerender = false;
 const $$Invoice = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Cuentas de cobro" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<section> ${renderComponent($$result2, "InvoiceGenerator", InvoiceGenerator, { "client:visible": true, "client:component-hydration": "visible", "client:component-path": "C:/Users/aguan/Documents/TOMAS/NEOARTS/NeoArts-WebTools/NeoArts-WebTools/src/features/invoice/components/InvoiceGenerator", "client:component-export": "default" })} </section> ` })}`;
-}, "C:/Users/aguan/Documents/TOMAS/NEOARTS/NeoArts-WebTools/NeoArts-WebTools/src/pages/invoice.astro", void 0);
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Cuentas de cobro" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<h1 class="text-2xl font-bold mb-10">Generador de cuentas de cobro</h1> <section> ${renderComponent($$result2, "InvoiceGenerator", InvoiceGenerator, { "client:visible": true, "client:component-hydration": "visible", "client:component-path": "C:/Users/aguan/Documents/TOMAS/NeoArts/NeoArts Environment/NeoArts-WebTools/src/features/invoice/components/InvoiceGenerator", "client:component-export": "default" })} </section> ` })}`;
+}, "C:/Users/aguan/Documents/TOMAS/NeoArts/NeoArts Environment/NeoArts-WebTools/src/pages/invoice.astro", void 0);
 
-const $$file = "C:/Users/aguan/Documents/TOMAS/NEOARTS/NeoArts-WebTools/NeoArts-WebTools/src/pages/invoice.astro";
+const $$file = "C:/Users/aguan/Documents/TOMAS/NeoArts/NeoArts Environment/NeoArts-WebTools/src/pages/invoice.astro";
 const $$url = "/invoice";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({

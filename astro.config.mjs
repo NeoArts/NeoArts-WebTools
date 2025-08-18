@@ -5,7 +5,7 @@ import react from "@astrojs/react";
 // https://astro.build/config
 export default defineConfig({
   site: 'https://neoarts.github.io',
-  base: '/NeoArts-WebTools',
+  base: '/NeoArts-WebTools/',
   integrations: [
     tailwind(), 
     react()

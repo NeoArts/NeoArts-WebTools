@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import Input from '../../../shared/ui/components/Input'
 
 function ProviderDiscountTable({ provider, setProvider } : { provider: Provider, setProvider: any }) {
+    const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
         if(!provider.wholesaleDiscount || provider.wholesaleDiscount.length === 0) {
@@ -51,7 +52,7 @@ function ProviderDiscountTable({ provider, setProvider } : { provider: Provider,
                                     className='w-8 h-8 bg-red-500 p-2 hover:bg-red-700 cursor-pointer rounded-md'
                                     onClick={() => handleDeleteRow(index)}
                                 >
-                                    <img src="/icons/trash.svg" alt="delete" />    
+                                    <img src={`${baseUrl}icons/trash.svg`} alt="delete" />    
                                 </div>
                             </div>
                         </div>

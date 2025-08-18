@@ -3,7 +3,7 @@ import Button from '../../../shared/ui/components/Button';
 
 function ImgContainer({ imgData, setImgData } : { imgData: string, setImgData: any }) {
 
-    
+    const baseUrl = import.meta.env.BASE_URL || '/';
     const [focused, setFocused] = React.useState(false)
 
     const pasteImg = (e:any) => {
@@ -57,7 +57,7 @@ function ImgContainer({ imgData, setImgData } : { imgData: string, setImgData: a
                 className='absolute w-6 h-6 p-1 top-0 right-0 bg-black cursor-pointer'
                 onClick={() => setImgData({ base64String: '', height: 0 })}
             >
-                <img src="../icons/trash.svg" alt="" className='w-full h-full' />
+                <img src={`${baseUrl}icons/trash.svg`} alt="" className='w-full h-full' />
             </div>
             <p className='pb-2'>Imagen:</p>
             <div

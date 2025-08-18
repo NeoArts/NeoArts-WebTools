@@ -12,6 +12,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
 
     const [openDetails, setOpenDetails] = React.useState(false)
     const [currentProduct, setCurrentProduct] = React.useState({} as { product: Product, index: number })
+    const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
         if(currentQuote.id) saveToLocalStorage();
@@ -156,7 +157,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                                                     className='w-8 h-8 bg-red-500 p-2 hover:bg-red-700 cursor-pointer rounded-md'
                                                     onClick={() => handleDeleteRow(index)}
                                                 >
-                                                    <img src="/icons/trash.svg" alt="delete" />    
+                                                    <img src={`${baseUrl}icons/trash.svg`} alt="delete" />    
                                                 </div>
                                             </div>
                                             <div className='sticky top-0 right-12 z-10 w-12 h-12 bg-white p-2'>
@@ -167,7 +168,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                                                     type='button'
                                                     onClick={() => handleDuplicate(index)}
                                                 >
-                                                    <img src="/icons/duplicate.svg" alt="delete" />    
+                                                    <img src={`${baseUrl}icons/duplicate.svg`} alt="delete" />    
                                                 </button>
                                             </div>
                                             <div className='sticky top-0 right-0 z-10 w-12 h-12 bg-white p-2'>
@@ -178,7 +179,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                                                     type='button'
                                                     onClick={() => handleOpenDetails(index)}
                                                 >
-                                                    <img src="/icons/info.svg" alt="delete" />    
+                                                    <img src={`${baseUrl}icons/info.svg`} alt="delete" />    
                                                 </button>
                                             </div>
                                         </div>

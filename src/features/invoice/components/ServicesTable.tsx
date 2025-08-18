@@ -4,6 +4,7 @@ import TextArea from '../../../shared/ui/components/TextArea'
 import type { Service } from '../dtos/Service'
 
 function ServicesTable({ services, setServices } : { services: Service[], setServices: any }) {
+    const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
         const savedServices = localStorage.getItem('services')
@@ -102,7 +103,7 @@ function ServicesTable({ services, setServices } : { services: Service[], setSer
                                     className='w-8 h-8 bg-red-500 p-2 hover:bg-red-700 cursor-pointer rounded-md'
                                     onClick={() => handleDeleteRow(index)}
                                 >
-                                    <img src="/icons/trash.svg" alt="delete" />    
+                                    <img src={`${baseUrl}icons/trash.svg`} alt="delete" />    
                                 </div>
                             </div>
                         </div>

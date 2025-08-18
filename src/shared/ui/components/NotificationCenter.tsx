@@ -6,6 +6,7 @@ const NotificationCenter: React.FC = () => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
         loadNotifications();
@@ -226,7 +227,7 @@ const NotificationCenter: React.FC = () => {
                     {notifications.length > 0 && (
                         <div className="p-3 border-t border-gray-200">
                             <a
-                                href="/notifications"
+                                href={`${baseUrl}notifications`}
                                 className="block text-center text-sm text-purple-600 hover:text-purple-700 font-medium"
                             >
                                 Ver todas las notificaciones

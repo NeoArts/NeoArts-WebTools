@@ -3,6 +3,7 @@
     export const FlyOutContext = React.createContext({})
 
     function FlyOut({ children } : { children: React.ReactNode }) {
+        const baseUrl = import.meta.env.BASE_URL || '/';
 
         const [open, toggle] = React.useState(false)
         const [selectedCell, setCell] = React.useState({ x: 0, y: 0 })
@@ -20,10 +21,11 @@
 
 function Toggle() {
     const { open, toggle } : any = React.useContext(FlyOutContext);
+    const baseUrl = import.meta.env.BASE_URL || '/';
   
     return (
         <div className="w-8 h-6 p-1 cursor-pointer z-20 absolute top-0 -left-9 shadow-sm bg-gray-200 rounded-md" onClick={() => toggle(!open)}>
-            <img src="/icons/drag.svg" className='w-4 m-auto' alt="drag" />
+            <img src={`${baseUrl}icons/drag.svg`} className='w-4 m-auto' alt="drag" />
         </div>
     );
 }

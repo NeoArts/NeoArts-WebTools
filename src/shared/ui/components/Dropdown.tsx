@@ -21,6 +21,7 @@ function Dropdown(
 
 
     const [open, setOpen] = React.useState(false)
+    const baseUrl = import.meta.env.BASE_URL || '/';
 
     return (
         <div className={`${className} w-full relative z-10 gap-2 ${labelPosition === 'top' ? "flex-col" : "flex-row items-center"}`}>
@@ -37,7 +38,7 @@ function Dropdown(
                     onChange={(e:any) => setValue(e.target.value)}
                 />
                 <img 
-                    src="/icons/DropArrow.svg" 
+                    src={`${baseUrl}icons/DropArrow.svg`} 
                     alt="dropdown arrow" 
                     className='w-8'
                 />

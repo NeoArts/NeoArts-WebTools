@@ -10,6 +10,7 @@ const Header: React.FC<HeaderProps> = ({
     title = "NeoArts WebTools", 
     showNotifications = true 
 }) => {
+    const baseUrl = import.meta.env.BASE_URL || '/';
     return (
         <header className="bg-white border-b border-gray-200 shadow-sm">
             <div className="px-8 py-4">
@@ -34,13 +35,13 @@ const Header: React.FC<HeaderProps> = ({
                         {/* Quick Actions */}
                         <div className="hidden md:flex items-center gap-2">
                             <a
-                                href="/invoice"
+                                href={`${baseUrl}invoice`}
                                 className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                             >
                                 Facturar
                             </a>
                             <a
-                                href="/quote"
+                                href={`${baseUrl}quote`}
                                 className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                             >
                                 Cotizar

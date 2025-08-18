@@ -97,8 +97,9 @@ export const generateQuote = (quote: Quote) => {
     doc.SetDefaultHeader();
     doc.SetDefaultFooter();
     
-    doc.SetFont("Montserrat");
+    doc.SetFont("Montserrat-Regular");
     
+    doc.AddBlankLines(3);
     doc.AddLine(`Bogotá D.C.`);
     doc.AddLine(`${getSpanishFormattedDate()}`);
     doc.AddBlankLines(1);
@@ -115,10 +116,10 @@ export const generateQuote = (quote: Quote) => {
     doc.AddTable(
         [
             {text: "ARTICULO", width: 0.2}, 
-            {text: "MARCA", width: 0.1},
+            {text: "MARCA", width: 0.15},
             {text: "IMAGEN", width: 0.2},
-            {text: "UND", width: 0.1},
-            {text: "VALOR UN", width: 0.2}
+            {text: "UND", width: 0.08},
+            {text: "VALOR UN", width: 0.17}
         ],
         [
             ...quote.products.map(product => [product.name, product.markType, "", product.quantity.toString(), `$${addThousandSeparator(product.sellPrice)} COP`])
@@ -132,6 +133,7 @@ export const generateQuote = (quote: Quote) => {
     }
 
     doc.SetTextColor(0, 0, 0);
+    doc.AddBlankLines(1);
     doc.AddLine('NOTA: Las cantidades  entregadas pueden variar en un 2% aproximadamente,');
     doc.AddLine('sobre el total de la orden.');
     doc.AddBlankLines(1);
@@ -146,7 +148,7 @@ export const generateQuote = (quote: Quote) => {
     doc.AddLineTab("Entrega(s):", "A convenir");
 
     // Use AddSign for automatic positioning instead of absolute coordinates
-    doc.AddSign(quoteTemplate.sign, "PNG", 0, 220, 80); // x=0 uses current margin
+    doc.AddSign(quoteTemplate.sign, "PNG", 60, 220, 80); // x=0 uses current margin
     
     // Templates are already applied at the beginning, no need to call AddTemplate() here
     doc.DownloadPdf(`Cotización ${quote.client} ${"REF: VPM-" + quote.number}.pdf`);

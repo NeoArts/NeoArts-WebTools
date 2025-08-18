@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { invoiceStorage, type StoredInvoice } from '../services/invoiceStorage';
+import { NotificationService } from '../../../shared/services/notifications';
 
 interface InvoiceHistoryProps {
     isOpen: boolean;
@@ -21,8 +22,13 @@ const InvoiceHistory: React.FC<InvoiceHistoryProps> = ({ isOpen, onClose }) => {
         try {
             const allInvoices = await invoiceStorage.getAllInvoices();
             setInvoices(allInvoices);
+            
+            if (allInvoices.length > 0) {
+                NotificationService.dataLoaded(allInvoices.length, 'facturas');
+            }
         } catch (error) {
             console.error('Error loading invoices:', error);
+            NotificationService.error('Error al cargar el historial de facturas');
         } finally {
             setLoading(false);
         }

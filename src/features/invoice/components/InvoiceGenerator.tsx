@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react'
 import Select, { type SelectOption } from '../../../shared/ui/components/Select'
 import Button from '../../../shared/ui/components/Button'
+import ToastProvider from '../../../shared/ui/components/ToastProvider'
 import { generateInvoice, templates } from '../services/invoiceUtils'
 import { generateInvoiceId } from '../services/invoiceIdGenerator'
+import { NotificationService } from '../../../shared/services/notifications'
 import ServicesTable from './ServicesTable'
 import InvoiceHistory from './InvoiceHistory'
 import type { Service } from '../dtos/Service'
@@ -13,7 +15,8 @@ function InvoiceGenerator() {
         setCustomer({
             name: 'Ensafe SAS',
             value: '900392150-2'
-        })
+        });
+        
     }, [])
 
     const [services, setServices] = React.useState([{
@@ -34,19 +37,45 @@ function InvoiceGenerator() {
         }
         
         // Validate invoice data before generation
-        const validation = { isValid: true, errors: [] }
+        const errors: string[] = [];
+        
+        if (!customer.name) {
+            errors.push('• Debe seleccionar un cliente');
+        }
+        
+        if (services.every(s => !s.name || s.value <= 0)) {
+            errors.push('• Debe agregar al menos un servicio válido');
+        }
+        
+        if (services.some(s => s.name && s.value <= 0)) {
+            errors.push('• Todos los servicios deben tener un valor mayor a 0');
+        }
 
-        if (!validation.isValid) {
-            alert(`Por favor corrige los siguientes errores:\n\n${validation.errors.join('\n')}`);
+        if (errors.length > 0) {
+            NotificationService.validationError(errors);
             return;
         }
         
+        // Show loading notification
+        const loadingToast = NotificationService.loading('Generando cuenta de cobro...');
+        
         try {
             const invoiceNumber = await generateInvoice(invoice);
-            alert(`Cuenta de cobro generada exitosamente con número: ${invoiceNumber}`);
+            
+            // Update loading toast to success
+            NotificationService.updateToast(loadingToast, 'success', 
+                `✅ Cuenta de cobro ${invoiceNumber} generada exitosamente`);
+            
+            // Show additional success notification
+            NotificationService.invoiceSaved();
+            
         } catch (error) {
             console.error('Error generating invoice:', error);
-            alert('Error al generar la cuenta de cobro. Por favor, intente nuevamente.');
+            
+            // Update loading toast to error
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            NotificationService.updateToast(loadingToast, 'error', 
+                `❌ Error al generar la cuenta de cobro: ${errorMessage}`);
         }
     }
 
@@ -194,6 +223,9 @@ function InvoiceGenerator() {
                 isOpen={showHistory} 
                 onClose={() => setShowHistory(false)} 
             />
+            
+            {/* Toast Notifications */}
+            <ToastProvider />
         </div>
     )
 }

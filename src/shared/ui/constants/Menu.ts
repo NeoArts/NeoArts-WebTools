@@ -15,8 +15,8 @@ export const MenuOptions = [
         active: true
     },
     {
-        title: "Creador de Posts",
-        href: "/post",
+        title: "Notificaciones",
+        href: "/notifications",
         active: true
     }
 ]

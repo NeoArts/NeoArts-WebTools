@@ -4,6 +4,9 @@ import FormProducts from './FormProducts'
 import { setProductAutomatedFields } from '../services/ProductCalc'
 import { emptyProduct } from '../constants/emptyProducts'
 import { updateQuote } from '../services/QuoteController'
+import type { Product } from '../dtos/Product'
+import type { Quote } from '../dtos/Quote'
+import type { DocImage } from '../dtos/DocImage'
 
 function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, setCurrentQuote: Dispatch<SetStateAction<Quote>> }) {
 
@@ -115,10 +118,10 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                 handleValueChange={handleValueChange}
                 onImageChange={onImageChange}
             />
-            <div className='w-[calc(100vw-400px)] overflow-scroll'>
+            <div className='w-full max-w-[calc(100vw-20rem)] lg:max-w-[calc(100vw-25rem)] xl:max-w-[calc(100vw-31.25rem)] overflow-scroll'>
                 <div className="mx-auto w-full flex flex-col gap-1">
                     <div className='w-full h-auto'>
-                        <div id='table-scroll' className='w-full h-[calc(100vh-240px)] relative overflow-scroll'>
+                        <div id='table-scroll' className='w-full h-[calc(100vh-15rem)] sm:h-[calc(100vh-16rem)] md:h-[calc(100vh-18rem)] lg:h-[calc(100vh-20rem)] relative overflow-scroll'>
                             <div className='flex bg-white items-center w-max rounded-lg mb-1 z-20 sticky top-0 left-0'>
                                 <div className='min-w-48 px-5 py-2 font-bold bg-white'>Artículo</div>
                                 <div className='min-w-48 px-5 py-2 font-bold bg-white'>Tipo de Marca</div>

@@ -4,6 +4,7 @@ import QuoteTable from './QuoteTable'
 import Button from '../../../shared/ui/components/Button'
 import { generateQuote } from '../../invoice/services/invoiceUtils'
 import { getQuote } from '../services/QuoteController'
+import type { Quote } from '../dtos/Quote'
 
 function Quote() {
 

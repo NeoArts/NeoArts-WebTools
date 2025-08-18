@@ -499,24 +499,36 @@ export class PdfProvider
             return acc;
         }, {});
 
+        // Calculate row heights based on products if provided
+        const calculatedRowHeights = this.calculateRowHeights(data, rowHeights, products);
+
         const startX = this.layout.leftMargin;
         const startY = this.currentY; 
     
         autoTable(this.doc, {
             head: [headers.map(header => header.text)],
             body: data,
+            tableWidth: 'wrap',
+            rowPageBreak: 'avoid',
             styles: { 
                 fillColor: [255, 255, 255], 
                 textColor: [0, 0, 0],   
                 lineWidth: 0.5,             
-                font: "Montserrat-Bold"     
+                font: "Montserrat-Bold",
+                overflow: 'linebreak',
+                cellWidth: 'wrap'
             },
             didParseCell: (data) => {
                 if (data.section === 'body') {
                     const rowIndex = data.row.index;
                     
-                    if (rowHeights && rowIndex < rowHeights.length) {
-                        data.cell.styles.minCellHeight = rowHeights[rowIndex];
+                    // Apply calculated row height for each row with proper validation
+                    if (calculatedRowHeights && rowIndex >= 0 && rowIndex < calculatedRowHeights.length) {
+                        const calculatedHeight = calculatedRowHeights[rowIndex];
+                        data.cell.styles.minCellHeight = calculatedHeight;
+                        console.log(`PDF Debug: Applied height ${calculatedHeight}px to row ${rowIndex}, column ${data.column.index}`);
+                    } else {
+                        console.log(`PDF Debug: No height applied to row ${rowIndex} (calculatedRowHeights length: ${calculatedRowHeights?.length || 0})`);
                     }
                 }
             },
@@ -531,7 +543,8 @@ export class PdfProvider
                         if(data.cursor) data.cursor.y = this.contentStartY;
                     }
                     
-                    if(products && rowIndex < products.length) {
+                    // Only add image if we have valid row index and products
+                    if(products && rowIndex >= 0 && rowIndex < products.length && products[rowIndex]) {
                         this.addProductImage(data.cell.y, products[rowIndex]);
                     }
                 }
@@ -552,6 +565,101 @@ export class PdfProvider
         });
     }
 
+    private calculateRowHeights(data: string[][], providedRowHeights?: number[], products?: Product[]): number[]
+    {
+        const DEFAULT_ROW_HEIGHT = 30; // Default minimum row height
+        const CELL_PADDING = 10; // Padding around images
+        const MIN_IMAGE_MARGIN = 5; // Minimum margin around images
+        
+        const rowHeights: number[] = [];
+        
+        console.log(`PDF Debug: calculateRowHeights called with data.length=${data.length}, products.length=${products?.length || 0}`);
+        
+        for (let i = 0; i < data.length; i++) {
+            let calculatedHeight = DEFAULT_ROW_HEIGHT;
+            
+            // Use provided row height if available
+            if (providedRowHeights && i < providedRowHeights.length && providedRowHeights[i] > 0) {
+                calculatedHeight = providedRowHeights[i];
+                console.log(`PDF Debug: Row ${i} - Using provided height: ${calculatedHeight}px`);
+            }
+            
+            // Calculate height based on product image if available
+            if (products && i < products.length) {
+                const product = products[i];
+                console.log(`PDF Debug: Row ${i} - Processing product:`, {
+                    name: product?.name || 'Unknown',
+                    hasImage: !!product?.image,
+                    hasBase64: !!product?.image?.base64String,
+                    imageHeight: product?.image?.height
+                });
+                
+                const imageHeight = this.getProductImageHeight(product);
+                
+                if (imageHeight > 0) {
+                    // Add padding around the image for better presentation
+                    const requiredHeight = imageHeight + (CELL_PADDING * 2) + MIN_IMAGE_MARGIN;
+                    calculatedHeight = Math.max(calculatedHeight, requiredHeight);
+                    
+                    console.log(`PDF Debug: Row ${i} - Product "${product?.name || 'Unknown'}" requires height: ${requiredHeight}px (image: ${imageHeight}px + padding: ${CELL_PADDING * 2}px + margin: ${MIN_IMAGE_MARGIN}px)`);
+                } else {
+                    console.log(`PDF Debug: Row ${i} - Product "${product?.name || 'Unknown'}" has no valid image height, using default: ${calculatedHeight}px`);
+                }
+            } else {
+                console.log(`PDF Debug: Row ${i} - No product available (products: ${!!products}, index valid: ${products ? i < products.length : false})`);
+            }
+            
+            rowHeights.push(calculatedHeight);
+            console.log(`PDF Debug: Row ${i} - Final calculated height: ${calculatedHeight}px`);
+        }
+        
+        console.log(`PDF Debug: Final row heights array:`, rowHeights);
+        return rowHeights;
+    }
+
+    private getProductImageHeight(product: Product): number
+    {
+        // Validate product exists
+        if (!product) {
+            console.log(`PDF Debug: getProductImageHeight - Product is null/undefined`);
+            return 0;
+        }
+
+        // Check if product has image property
+        if (!product.image) {
+            console.log(`PDF Debug: getProductImageHeight - Product "${product.name || product.id || 'Unknown'}" has no image property`);
+            return 0;
+        }
+
+        // Check if image has height property and is valid
+        if (!product.image.height || typeof product.image.height !== 'number' || product.image.height <= 0) {
+            console.log(`PDF Debug: getProductImageHeight - Product "${product.name || product.id || 'Unknown'}" has invalid height:`, {
+                height: product.image.height,
+                type: typeof product.image.height,
+                isNumber: typeof product.image.height === 'number',
+                isPositive: product.image.height > 0
+            });
+            return 0;
+        }
+
+        // Additional validation for reasonable height values
+        const MAX_REASONABLE_HEIGHT = 400; // Maximum reasonable height for table row
+        const MIN_REASONABLE_HEIGHT = 10;  // Minimum reasonable height for image
+        
+        if (product.image.height > MAX_REASONABLE_HEIGHT) {
+            console.warn(`PDF Warning: Product "${product.name || product.id || 'Unknown'}" has unusually large image height: ${product.image.height}px. Consider resizing for better layout.`);
+            return MAX_REASONABLE_HEIGHT; // Cap at maximum reasonable height
+        }
+        
+        if (product.image.height < MIN_REASONABLE_HEIGHT) {
+            console.warn(`PDF Warning: Product "${product.name || product.id || 'Unknown'}" has unusually small image height: ${product.image.height}px.`);
+            return MIN_REASONABLE_HEIGHT; // Use minimum reasonable height
+        }
+
+        console.log(`PDF Debug: getProductImageHeight - Product "${product.name || product.id || 'Unknown'}" has valid height: ${product.image.height}px`);
+        return product.image.height;
+    }
+
     AddTemplate(): void
     {
         this.SetDefaultHeader();
@@ -567,25 +675,68 @@ export class PdfProvider
 
     private addProductImage(y: number, product: Product): void
     {
-        if (product.image && product.image.base64String) {
-            const xPosition = 240;
-            const yPosition = y; 
-            const imageHeight = product.image.height;
+        // Validate product exists
+        if (!product) {
+            console.warn('PDF Warning: Product is undefined or null at position y:', y);
+            return;
+        }
+
+        // Check if product has image property
+        if (!product.image) {
+            console.warn(`PDF Warning: Product "${product.name || product.id || 'Unknown'}" does not have an image property`);
+            return;
+        }
+
+        // Check if image has base64String
+        if (!product.image.base64String) {
+            console.warn(`PDF Warning: Product "${product.name || product.id || 'Unknown'}" has an image object but no base64String`);
+            return;
+        }
+
+        // Get validated image height
+        const imageHeight = this.getProductImageHeight(product);
+        if (imageHeight <= 0) {
+            console.warn(`PDF Warning: Product "${product.name || product.id || 'Unknown'}" has invalid image height:`, product.image.height);
+            return;
+        }
+
+        try {
+            // Calculate positioning with padding on all sides
+            const CELL_PADDING = 10; // Should match the padding used in calculateRowHeights
+            const HORIZONTAL_PADDING = 8; // Horizontal padding for left and right
             
-            // Check if image fits on current page
-            if (yPosition + imageHeight > this.contentEndY) {
-                // Image would overflow, it will be handled by table pagination
+            // Updated column area for the image (adjusted for new column widths)
+            // ARTICULO: 20% + MARCA: 15% = 35% of total width before IMAGEN column
+            const originalXPosition = 265; // Shifted from 235 to account for wider MARCA column
+            const originalImageWidth = 117;
+            
+            // Calculate new positioning with horizontal padding
+            const availableWidth = originalImageWidth - (HORIZONTAL_PADDING * 2);
+            const xPosition = originalXPosition + HORIZONTAL_PADDING; // Add left padding
+            const yPosition = y + CELL_PADDING; // Add top padding
+            const imageWidth = availableWidth; // Reduce width to accommodate horizontal padding
+            
+            // Check if image fits on current page (including padding)
+            if (yPosition + imageHeight + CELL_PADDING > this.contentEndY) {
+                console.log(`PDF Info: Image for product "${product.name || product.id || 'Unknown'}" will be handled by table pagination`);
                 return;
             }
             
+            // Add the image with calculated positioning and padding
             this.doc.addImage(
                 product.image.base64String, 
                 "PNG", 
                 xPosition, 
                 yPosition, 
-                117, 
+                imageWidth, 
                 imageHeight
             );
+            
+            console.log(`PDF Info: Successfully added image for product "${product.name || product.id || 'Unknown'}" at position (${xPosition}, ${yPosition}) with size ${imageWidth}x${imageHeight} (with horizontal padding: ${HORIZONTAL_PADDING}px)`);
+            
+        } catch (error) {
+            console.error(`PDF Error: Failed to add image for product "${product.name || product.id || 'Unknown'} ${product.id}":`, error);
+            // Don't throw the error to prevent PDF generation from failing
         }
     }
 

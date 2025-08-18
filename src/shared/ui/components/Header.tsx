@@ -33,20 +33,7 @@ const Header: React.FC<HeaderProps> = ({
                     {/* Right side - Notifications and User */}
                     <div className="flex items-center gap-4">
                         {/* Quick Actions */}
-                        <div className="hidden md:flex items-center gap-2">
-                            <a
-                                href={`${baseUrl}invoice`}
-                                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                            >
-                                Facturar
-                            </a>
-                            <a
-                                href={`${baseUrl}quote`}
-                                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                            >
-                                Cotizar
-                            </a>
-                        </div>
+
 
                         {/* Notification Center */}
                         {showNotifications && <NotificationCenter />}

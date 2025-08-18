@@ -14,6 +14,7 @@ function Quotes() {
     const [openDetails, setOpenDetails] = React.useState(false)
     const [selectedQuotes, setSelectedQuotes] = React.useState([] as Quote[])
     const [isCreatingBackup, setIsCreatingBackup] = React.useState(false)
+    const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
         getQuotes().then((quotes) => {
@@ -27,7 +28,7 @@ function Quotes() {
 
     const handleSetCurrentQuote = (quote: Quote) => {
         localStorage.setItem('currentQuote', quote.id);
-        window.location.href = `/quote/quote-generator`
+        window.location.href = `${baseUrl}quote/quote-generator`
     }
 
     const handleDeleteQuote = (id: string) => {

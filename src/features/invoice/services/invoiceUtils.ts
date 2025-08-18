@@ -56,7 +56,7 @@ export const generateInvoice = async (invoice: Invoice) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    doc.AddBlankLines(2); // Improved automatic spacing instead of manual calculation
+    doc.AddBlankLines(1); // Improved automatic spacing instead of manual calculation
     doc.SetTextColor(135, 135, 135);
     // Use AddParagraph with justification for better text layout
     const legalText = `Declaro voluntariamente y bajo la gravedad de juramento, que pertenezco al régimen simplificado, por lo tanto, de acuerdo al Art 42 del Decreto 3541 de 1983 y Art 511 del ET, no estoy obligado a expedir factura de venta. CERTIFICO QUE: la prestación de este servicio se realizó de manera personal, por tanto: "Certifico bajo la gravedad de juramento que en el desarrollo de mis actividades de servicios, no tengo contratado o vinculado dos (2) o más trabajadores o contratistas asociados a mi actividad económica por un término superior a 90 días continuos o discontinuos. De acuerdo con lo anterior, solicito para efectos de retención en la fuente me sea aplicado del Estatuto Tributario el artículo 383"`;

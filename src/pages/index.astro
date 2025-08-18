@@ -2,10 +2,130 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Welcome to Astro.">
-	Home
+<Layout title="Dashboard">
+	<div class="space-y-6">
+		<!-- Welcome Section -->
+		<div class="bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl shadow-lg text-white p-8">
+			<div class="flex items-center gap-4">
+				<div class="p-3 bg-white bg-opacity-20 rounded-lg">
+					<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+					</svg>
+				</div>
+				<div>
+					<h1 class="text-3xl font-bold">¡Bienvenido a NeoArts WebTools!</h1>
+					<p class="text-purple-100 mt-2">Tu conjunto de herramientas profesionales para gestionar proyectos creativos</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Quick Actions Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+			<!-- Invoice Action -->
+			<a href="/invoice" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-purple-300">
+				<div class="flex items-center gap-4">
+					<div class="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+						<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+						</svg>
+					</div>
+					<div>
+						<h3 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Cuentas de cobro</h3>
+						<p class="text-sm text-gray-500">Generar facturas</p>
+					</div>
+				</div>
+			</a>
+
+			<!-- Quote Action -->
+			<a href="/quote" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-purple-300">
+				<div class="flex items-center gap-4">
+					<div class="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+						<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+						</svg>
+					</div>
+					<div>
+						<h3 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Cotizaciones</h3>
+						<p class="text-sm text-gray-500">Crear presupuestos</p>
+					</div>
+				</div>
+			</a>
+
+			<!-- Providers Action -->
+			<a href="/providers" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-purple-300">
+				<div class="flex items-center gap-4">
+					<div class="p-3 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
+						<svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+						</svg>
+					</div>
+					<div>
+						<h3 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Proveedores</h3>
+						<p class="text-sm text-gray-500">Gestionar contactos</p>
+					</div>
+				</div>
+			</a>
+
+			<!-- Posts Action -->
+			<a href="/post" class="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-purple-300">
+				<div class="flex items-center gap-4">
+					<div class="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+						<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+						</svg>
+					</div>
+					<div>
+						<h3 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Creador de Posts</h3>
+						<p class="text-sm text-gray-500">Contenido social</p>
+					</div>
+				</div>
+			</a>
+		</div>
+
+		<!-- Recent Activity -->
+		<div class="bg-white rounded-xl shadow-sm border border-gray-200">
+			<div class="p-6 border-b border-gray-200">
+				<h2 class="text-xl font-semibold text-gray-900">Actividad reciente</h2>
+			</div>
+			<div class="p-6">
+				<div class="space-y-4">
+					<div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+						<div class="p-2 bg-green-100 rounded-full">
+							<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+							</svg>
+						</div>
+						<div class="flex-1">
+							<p class="text-sm font-medium text-gray-900">Cotización enviada a Ensafe SAS</p>
+							<p class="text-xs text-gray-500">Hace 2 horas</p>
+						</div>
+					</div>
+					
+					<div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+						<div class="p-2 bg-blue-100 rounded-full">
+							<svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+							</svg>
+						</div>
+						<div class="flex-1">
+							<p class="text-sm font-medium text-gray-900">Cuenta de cobro generada</p>
+							<p class="text-xs text-gray-500">Hace 5 horas</p>
+						</div>
+					</div>
+					
+					<div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+						<div class="p-2 bg-purple-100 rounded-full">
+							<svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+							</svg>
+						</div>
+						<div class="flex-1">
+							<p class="text-sm font-medium text-gray-900">Nuevo proveedor agregado</p>
+							<p class="text-xs text-gray-500">Ayer</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </Layout>
-
-<style>
-
-</style>

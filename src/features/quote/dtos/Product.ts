@@ -1,4 +1,6 @@
-type Product = {
+import type { DocImage } from './DocImage';
+
+export type Product = {
     id: number,
     name: string,
     markType: string,

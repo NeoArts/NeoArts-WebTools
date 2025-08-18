@@ -1,27 +1,48 @@
 import { getLastMonth, getSpanishFormattedDate } from "../../../shared/services/dateUtils";
 import { pdfImages, quoteTemplate } from "../../pdf/assets/pdfImages";
 import { PdfProvider } from "../../pdf/services/pdfUtils";
+import { invoiceStorage } from "./invoiceStorage";
+import type { Invoice } from "../dtos/Invoice";
+import type { Quote } from "../../quote/dtos/Quote";
 
-export const generateInvoice = (invoice: Invoice) => {
-    const doc = new PdfProvider();
-    const header = pdfImages.header;
+export const generateInvoice = async (invoice: Invoice) => {
+    try {
+        // Generate invoice number if not provided
+        if (!invoice.invoiceNumber) {
+            invoice.invoiceNumber = await invoiceStorage.getNextInvoiceNumber();
+        }
+
+        // Save invoice to storage
+        await invoiceStorage.saveInvoice(invoice, invoice.invoiceNumber);
+
+        // Create PDF with custom margins for invoice
+        const doc = new PdfProvider({
+            leftMargin: 60,
+            rightMargin: 80,
+            topMargin: 105,
+            bottomMargin: 90
+        });
+        
+        // Set up header and footer templates
+        doc.SetDefaultInvoiceHeader();
+        doc.SetDefaultInvoiceFooter();
+        
+        doc.SetFont("Montserrat");
+        
+        doc.AddHeader3(`CUENTA DE COBRO`, "black");
+        doc.AddHeader6("Número:");
+        doc.AddLine(`${invoice.invoiceNumber}`);
+        doc.AddBlankLines(1); // Reduced from 3 for better spacing
+        doc.AddHeader6("Fecha de emisión:");
+        doc.AddLine(`${getSpanishFormattedDate()}`);
+        doc.AddBlankLines(1);
+        doc.AddHeader6("Facturar a:");
+        doc.AddHeader6(invoice.company.name);
+        doc.AddLine(`${invoice.company.value.includes("-") ? "NIT" : "CC"}: ${invoice.company.value}`);
+        doc.AddBlankLines(1);
+        doc.AddHeader6("Por el concepto de:");
     
-    doc.SetMargin(60);
-    doc.SetFont("Montserrat");
-    doc.AddImage(header, "PNG", 0, 60, 0, 35);
-    
-    doc.AddHeader6("CUENTA DE COBRO", "white");
-    doc.AddBlankLines(3);
-    doc.AddLine(`Bogotá D.C. ${getSpanishFormattedDate()}`);
-    doc.AddBlankLines(1);
-    doc.AddLine(invoice.company.name);
-    doc.AddLine(`${invoice.company.value.includes("-") ? "NIT" : "CC"}. ${invoice.company.value}`);
-    doc.AddBlankLines(1);
-    doc.AddHeader6("debe a:");
-    doc.AddLine(`Tomás Parra Monroy (NEO ARTS)`);
-    doc.AddLine(`NIT. 1.001.098.088-3`);
-    doc.AddBlankLines(1);
-    doc.AddHeader6("Por el concepto de:");
+    // Table will automatically handle positioning and page breaks
     doc.AddTable(
         [
             {text: "Servicio", width: 0.5}, 
@@ -37,32 +58,45 @@ export const generateInvoice = (invoice: Invoice) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    doc.AddBlankLines(invoice.services.length + 5);
+    doc.AddBlankLines(2); // Improved automatic spacing instead of manual calculation
     doc.SetTextColor(135, 135, 135);
-    doc.AddLine('Declaro voluntariamente y bajo la gravedad de juramento, que pertenezco al');
-    doc.AddLine('régimen simplificado, por lo tanto, de acuerdo al Art 42 del Decreto 3541 de 1983 y');
-    doc.AddLine('Art 511 del ET, no estoy obligado a expedir factura de venta');
-    doc.AddLine('CERTIFICO QUE: la prestación de este servicio se realizó de manera personal, por tanto:');
-    doc.AddLine('“Certifico bajo la gravedad de juramento que en el desarrollo de mis actividades');
-    doc.AddLine('de servicios, no tengo contratado o vinculado dos (2) o más trabajadores o contratistas');
-    doc.AddLine('asociados a mi actividad económica por un término superior a 90 días continuos');
-    doc.AddLine('o discontinuos. De acuerdo con lo anterior, solicito para efectos de retención'); 
-    doc.AddLine('en la fuente me sea aplicado del Estatuto Tributario el artículo 383”');
+    // Use AddParagraph with justification for better text layout
+    const legalText = `Declaro voluntariamente y bajo la gravedad de juramento, que pertenezco al régimen simplificado, por lo tanto, de acuerdo al Art 42 del Decreto 3541 de 1983 y Art 511 del ET, no estoy obligado a expedir factura de venta. CERTIFICO QUE: la prestación de este servicio se realizó de manera personal, por tanto: "Certifico bajo la gravedad de juramento que en el desarrollo de mis actividades de servicios, no tengo contratado o vinculado dos (2) o más trabajadores o contratistas asociados a mi actividad económica por un término superior a 90 días continuos o discontinuos. De acuerdo con lo anterior, solicito para efectos de retención en la fuente me sea aplicado del Estatuto Tributario el artículo 383"`;
+
+    doc.AddParagraph(legalText, { align: 'justify' });
     doc.SetTextColor(0, 0, 0);
 
-    doc.AddBlankLines(3);
+    doc.AddBlankLines(2);
     doc.AddLine("Cordialmente");
-    doc.AddImage(pdfImages.sign, "PNG", 40, 588, 120, 80);
-    doc.AddBlankLines(3);
+    
+    // Use AddSign for automatic positioning instead of absolute coordinates
+    doc.AddSign(pdfImages.sign, "PNG", 60, 120, 80); // x=0 uses current margin
+    
+    doc.AddBlankLines(1);
     doc.AddLine("Tomás Parra Monroy");
     doc.AddLine("CC 1.001.098.088");
-    doc.DownloadPdf(`Cuenta de cobro ${invoice.company.name} ${getSpanishFormattedDate()}.pdf`);
+    doc.DownloadPdf(`Cuenta de cobro ${invoice.invoiceNumber} - ${invoice.company.name} ${getSpanishFormattedDate()}.pdf`);
+
+    return invoice.invoiceNumber;
+    } catch (error) {
+        console.error('Error generating invoice:', error);
+        throw new Error('Failed to generate invoice');
+    }
 };
 
 export const generateQuote = (quote: Quote) => {
-    const doc = new PdfProvider();
+    // Create PDF with custom margins for quote
+    const doc = new PdfProvider({
+        leftMargin: 60,
+        rightMargin: 60,
+        topMargin: 75,
+        bottomMargin: 90
+    });
     
-    doc.SetMargin(60);
+    // Set up templates at the beginning for proper header/footer on all pages
+    doc.SetDefaultHeader();
+    doc.SetDefaultFooter();
+    
     doc.SetFont("Montserrat");
     
     doc.AddLine(`Bogotá D.C.`);
@@ -76,7 +110,8 @@ export const generateQuote = (quote: Quote) => {
     doc.AddBlankLines(1);
     doc.AddLine("Tenemos el agrado de cotizar las siguientes referencias");
     doc.AddBlankLines(1);
-    console.log(quote.products);
+    
+    // Table with improved automatic positioning and page break handling
     doc.AddTable(
         [
             {text: "ARTICULO", width: 0.2}, 
@@ -87,8 +122,10 @@ export const generateQuote = (quote: Quote) => {
         ],
         [
             ...quote.products.map(product => [product.name, product.markType, "", product.quantity.toString(), `$${addThousandSeparator(product.sellPrice)} COP`])
-        ]
-    , [...quote.products.map((x:any) => x.image.height)], quote.products);
+        ], 
+        [...quote.products.map((x:any) => x.image.height)], 
+        quote.products
+    );
 
     function addThousandSeparator(value: number): string {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -108,9 +145,10 @@ export const generateQuote = (quote: Quote) => {
     doc.AddLineTab("Tiempo de producción:", "A convenir");
     doc.AddLineTab("Entrega(s):", "A convenir");
 
-    doc.AddSign(quoteTemplate.sign, "PNG", 60, 220, 80);
+    // Use AddSign for automatic positioning instead of absolute coordinates
+    doc.AddSign(quoteTemplate.sign, "PNG", 0, 220, 80); // x=0 uses current margin
     
-    doc.AddTemplate();
+    // Templates are already applied at the beginning, no need to call AddTemplate() here
     doc.DownloadPdf(`Cotización ${quote.client} ${"REF: VPM-" + quote.number}.pdf`);
 };
 

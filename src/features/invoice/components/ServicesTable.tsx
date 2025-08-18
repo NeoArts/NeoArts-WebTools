@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import Input from '../../../shared/ui/components/Input'
 import TextArea from '../../../shared/ui/components/TextArea'
+import type { Service } from '../dtos/Service'
 
 function ServicesTable({ services, setServices } : { services: Service[], setServices: any }) {
 
@@ -77,7 +78,7 @@ function ServicesTable({ services, setServices } : { services: Service[], setSer
                             key={index}
                             className='flex relative items-center'
                         >
-                            <div className='w-full flex'>
+                            <div className='w-full flex gap-2'>
                                 <div className='w-1/2 '>
                                     <Input
                                         id="service"

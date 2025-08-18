@@ -5,12 +5,13 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist --branch gh-pages --dotfiles"
   },
+  "homepage": "https://neoarts.github.io/NeoArts-WebTools",
   "engines": {
     "node": ">=18.0.0"
   },

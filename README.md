@@ -1,36 +1,139 @@
-# NeoArts WebTools
+# 🛠️ NeoArts WebTools
 
+[![Deploy to GitHub Pages](https://github.com/NeoArts/NeoArts-WebTools/actions/workflows/deploy.yml/badge.svg)](https://github.com/NeoArts/NeoArts-WebTools/actions/workflows/deploy.yml)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://neoarts.github.io/NeoArts-WebTools/)
 
-[![Ir a la página web](https://neoarts.com.co/)]
+**NeoArts WebTools** es una suite completa de herramientas de gestión empresarial diseñada para automatizar y agilizar las tareas administrativas. Desarrollada con tecnologías modernas como Astro.js, React y TypeScript.
 
-## 🚀 Estructura del proyecto
+## 🌟 Características Principales
 
-Inside of your Astro project, you'll see the following folders and files:
+### � **Generación de Documentos**
+- **Cuentas de Cobro**: Generación automática de facturas en PDF
+- **Cotizaciones**: Sistema de creación y gestión de cotizaciones
+- **Plantillas Personalizables**: Documentos adaptables a diferentes necesidades
+
+### 👥 **Gestión de Clientes y Proveedores**
+- **Registro de Clientes**: Base de datos organizada de clientes
+- **Gestión de Proveedores**: Administración completa de proveedores
+- **Historial de Transacciones**: Seguimiento detallado de todas las operaciones
+
+### 💻 **Terminal PowerShell Web**
+- **Interfaz de Terminal**: Terminal web simulado con comandos PowerShell
+- **Diagnósticos de Red**: Herramientas de ping y conectividad
+- **Comandos Personalizados**: Comandos específicos para operaciones NeoArts
+
+### 🎨 **Diseño Moderno**
+- **Interfaz Responsive**: Adaptable a dispositivos móviles y desktop
+- **Tema Oscuro/Claro**: Soporte para múltiples temas
+- **Notificaciones**: Sistema de notificaciones en tiempo real
+
+## 🚀 Demo en Vivo
+
+Visita la aplicación en funcionamiento: **[NeoArts WebTools Demo](https://neoarts.github.io/NeoArts-WebTools/)**
+
+## 🏗️ Estructura del Proyecto
 
 ```text
-/
-├── public/
-│   └── favicon.svg
+NeoArts-WebTools/
+├── public/                     # Archivos estáticos
+│   ├── favicon.svg
+│   └── icons/                  # Iconos SVG
 ├── src/
-│   ├── features/
-│   │   └── docs
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│   │   └── index.astro
-│   ├── shared/
-│       └── ui
+│   ├── features/              # Módulos funcionales
+│   │   ├── docs/              # Gestión de documentos
+│   │   ├── invoice/           # Sistema de facturación
+│   │   ├── pdf/               # Generación de PDFs
+│   │   ├── providers/         # Gestión de proveedores
+│   │   ├── quote/             # Sistema de cotizaciones
+│   │   └── terminal/          # Terminal PowerShell web
+│   ├── layouts/               # Layouts de Astro
+│   ├── pages/                 # Páginas de la aplicación
+│   └── shared/                # Componentes compartidos
+├── .github/workflows/         # GitHub Actions
 └── package.json
 ```
 
-## 🛠️ NeoArts WebTools
+## 🛠️ Tecnologías Utilizadas
 
-NeoArts WebTools es una herramienta diseñada para los trabajadores de la empresa NeoArts, con el propósito de automatizar actividades repetitivas y agilizar tareas administrativas. Esta herramienta ofrece diversas funcionalidades que permiten generar cuentas de cobro, registrar clientes y crear documentos de manera eficiente.
+- **[Astro.js](https://astro.build/)** - Framework de desarrollo web
+- **[React](https://reactjs.org/)** - Biblioteca de interfaz de usuario
+- **[TypeScript](https://www.typescriptlang.org/)** - Superset tipado de JavaScript
+- **[Tailwind CSS](https://tailwindcss.com/)** - Framework de CSS utilitario
+- **[jsPDF](https://github.com/MrRio/jsPDF)** - Generación de PDFs
+- **[React Hot Toast](https://react-hot-toast.com/)** - Sistema de notificaciones
 
-### Características principales
+## 🚀 Instalación y Desarrollo
 
-- Generación automática de cuentas de cobro: NeoArts WebTools simplifica el proceso de generar cuentas de cobro para los clientes de la empresa. Con solo unos pocos clics, los trabajadores pueden crear y personalizar cuentas de cobro de forma rápida y precisa.
+### Prerrequisitos
+- Node.js 18+ 
+- npm o yarn
 
-- Registro de clientes: La herramienta facilita el registro y gestión de clientes. Permite almacenar información relevante de los clientes, como nombre, dirección, contacto, entre otros datos, de manera organizada y accesible.
+### Instalación
 
-- Creación de documentos: NeoArts WebTools ofrece plantillas predefinidas para la creación de diversos documentos, como contratos, facturas y reportes. Los trabajadores pueden personalizar estos documentos según las necesidades específicas de cada proyecto o cliente.
+```bash
+# Clonar el repositorio
+git clone https://github.com/NeoArts/NeoArts-WebTools.git
+
+# Navegar al directorio
+cd NeoArts-WebTools
+
+# Instalar dependencias
+npm install
+
+# Ejecutar en modo desarrollo
+npm run dev
+```
+
+### Scripts Disponibles
+
+```bash
+npm run dev        # Servidor de desarrollo
+npm run build      # Construir para producción
+npm run preview    # Previsualizar build local
+npm run deploy     # Desplegar a GitHub Pages
+```
+
+## 📦 Despliegue
+
+### GitHub Pages (Automático)
+
+El proyecto está configurado para desplegarse automáticamente en GitHub Pages mediante GitHub Actions cuando se hace push a la rama `main`.
+
+### Despliegue Manual
+
+```bash
+# Construir el proyecto
+npm run build
+
+# Desplegar a GitHub Pages
+npm run deploy
+```
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 👥 Autores
+
+- **NeoArts Team** - *Desarrollo inicial* - [NeoArts](https://github.com/NeoArts)
+
+## 🙏 Agradecimientos
+
+- Astro.js por el excelente framework
+- React team por la fantástica biblioteca
+- Tailwind CSS por el sistema de diseño
+- Todos los contribuidores de código abierto
+
+---
+
+**¿Encontraste un bug?** [Reporta un issue](https://github.com/NeoArts/NeoArts-WebTools/issues)
+
+**¿Tienes una idea?** [Sugiere una nueva feature](https://github.com/NeoArts/NeoArts-WebTools/issues/new?template=feature_request.md)

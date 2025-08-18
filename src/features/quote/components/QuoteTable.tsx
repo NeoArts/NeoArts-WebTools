@@ -119,7 +119,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                 handleValueChange={handleValueChange}
                 onImageChange={onImageChange}
             />
-            <div className='w-full max-w-[calc(100vw-20rem)] lg:max-w-[calc(100vw-25rem)] xl:max-w-[calc(100vw-31.25rem)] overflow-scroll'>
+            <div className='w-full max-w-[calc(100vw-20rem)] overflow-scroll'>
                 <div className="mx-auto w-full flex flex-col gap-1">
                     <div className='w-full h-auto'>
                         <div id='table-scroll' className='w-full h-[calc(100vh-15rem)] sm:h-[calc(100vh-16rem)] md:h-[calc(100vh-18rem)] lg:h-[calc(100vh-20rem)] relative overflow-scroll'>

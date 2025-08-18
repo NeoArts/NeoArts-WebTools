@@ -394,6 +394,19 @@ export class PdfProvider
         this.doc.setTextColor(0, 0, 0);
     }
 
+    AddInvoiceNumber(invoiceNumber: string): void
+    {
+        const textHeight = this.calculateTextHeight(invoiceNumber);
+        this.checkPageBreak(textHeight);
+
+        this.doc.setFont("Montserrat-Bold", "normal");
+        const textWidth = this.doc.getTextWidth(invoiceNumber);
+        this.doc.text(invoiceNumber, this.layout.width - this.layout.rightMargin - textWidth, 100);
+        this.doc.setFont("Montserrat-Regular", "normal");
+        this.moveToNextLine();
+        this.doc.setTextColor(0, 0, 0);
+    }
+
     AddBlankLines(lines: number): void
     {
         this.moveToNextLine(lines);

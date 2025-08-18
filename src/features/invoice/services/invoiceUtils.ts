@@ -30,9 +30,7 @@ export const generateInvoice = async (invoice: Invoice) => {
         doc.SetFont("Montserrat");
         
         doc.AddHeader3(`CUENTA DE COBRO`, "black");
-        doc.AddHeader6("Número:");
-        doc.AddLine(`${invoice.invoiceNumber}`);
-        doc.AddBlankLines(1); // Reduced from 3 for better spacing
+        doc.AddInvoiceNumber(`${invoice.invoiceNumber}`);
         doc.AddHeader6("Fecha de emisión:");
         doc.AddLine(`${getSpanishFormattedDate()}`);
         doc.AddBlankLines(1);
@@ -66,7 +64,7 @@ export const generateInvoice = async (invoice: Invoice) => {
     doc.AddParagraph(legalText, { align: 'justify' });
     doc.SetTextColor(0, 0, 0);
 
-    doc.AddBlankLines(2);
+    doc.AddBlankLines(1);
     doc.AddLine("Cordialmente");
     
     // Use AddSign for automatic positioning instead of absolute coordinates
@@ -173,7 +171,7 @@ export const templates = [
         id: 0,
         name: "Manejo de redes",
         description: `Manejo de redes sociales mes de ${getLastMonth()}`,
-        value: 250000,
+        value: 290000,
         company: "Ensafe SAS"
     },
 ]

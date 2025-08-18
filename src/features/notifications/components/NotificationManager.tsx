@@ -255,19 +255,6 @@ const NotificationManager: React.FC = () => {
                                     </button>
                                 </div>
                             </div>
-                            {notification.actionUrl && (
-                                <div className="mt-3">
-                                    <a
-                                        href={notification.actionUrl}
-                                        className="inline-flex items-center px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
-                                    >
-                                        Ver detalles
-                                        <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            )}
                         </div>
                     ))}
                 </div>

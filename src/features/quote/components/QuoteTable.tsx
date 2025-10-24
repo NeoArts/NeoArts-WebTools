@@ -4,6 +4,7 @@ import FormProducts from './FormProducts'
 import { setProductAutomatedFields } from '../services/ProductCalc'
 import { emptyProduct } from '../constants/emptyProducts'
 import { updateQuote } from '../services/QuoteController'
+import { scrapeProductFromUrl, mapScrapedDataToProduct } from '../services/ProductScraperService'
 import type { Product } from '../dtos/Product'
 import type { Quote } from '../dtos/Quote'
 import type { DocImage } from '../dtos/DocImage'
@@ -12,6 +13,9 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
 
     const [openDetails, setOpenDetails] = React.useState(false)
     const [currentProduct, setCurrentProduct] = React.useState({} as { product: Product, index: number })
+    const [scrapingUrl, setScrapingUrl] = React.useState('')
+    const [isScraperOpen, setIsScraperOpen] = React.useState(false)
+    const [isLoading, setIsLoading] = React.useState(false)
     const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
@@ -110,6 +114,47 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
         }));
     }
 
+    const handleScrapeProduct = async () => {
+        if (!scrapingUrl.trim()) return;
+        
+        console.log('=== QuoteTable: handleScrapeProduct called ===');
+        console.log('Scraping URL:', scrapingUrl);
+        
+        setIsLoading(true);
+        try {
+            console.log('Calling scrapeProductFromUrl...');
+            const scrapedData = await scrapeProductFromUrl(scrapingUrl);
+            console.log('Scraped data received:', scrapedData);
+            
+            const newProduct = mapScrapedDataToProduct(
+                scrapedData, 
+                currentQuote.products[currentQuote.products.length - 1].id + 1
+            );
+            console.log('New product created:', newProduct);
+            
+            setCurrentQuote((quote) => ({
+                ...quote,
+                products: [...quote.products, newProduct]
+            }));
+
+            setScrapingUrl('');
+            setIsScraperOpen(false);
+            
+            const div = document.getElementById("table-scroll");
+            if(div) setTimeout(() => {div.scrollTop = div?.scrollHeight;}, 300);
+            
+            console.log('Product imported successfully!');
+        } catch (error) {
+            console.error('=== Error in handleScrapeProduct ===');
+            console.error('Error:', error);
+            
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            alert(`Error al importar producto:\n${errorMessage}\n\nRevisa la consola del navegador para más detalles.`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div>
             <Details 
@@ -187,12 +232,47 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                                 })
                             }
                         </div>
-                        <div className='pr-36 mt-2'>
+                        <div className='pr-36 mt-2 flex gap-2'>
                             <button 
-                                className='w-full rounded-md bg-gray-200 hover:bg-gray-400'
+                                className='flex-1 rounded-md bg-gray-200 hover:bg-gray-400 py-2'
                                 onClick={handleAddRow}
-                            >+</button>
+                            >+ Agregar Fila</button>
+                            <button 
+                                className='flex-1 rounded-md bg-blue-200 hover:bg-blue-400 py-2'
+                                onClick={() => setIsScraperOpen(!isScraperOpen)}
+                            >🔗 Importar desde URL</button>
                         </div>
+
+                        {isScraperOpen && (
+                            <div className='pr-36 mt-2 p-4 bg-blue-50 rounded-md border border-blue-200'>
+                                <label className='block mb-2 font-semibold text-gray-700'>URL del Producto:</label>
+                                <div className='flex gap-2'>
+                                    <input
+                                        type='url'
+                                        className='flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                        placeholder='https://www.catalogospromocionales.com/p/...'
+                                        value={scrapingUrl}
+                                        onChange={(e) => setScrapingUrl(e.target.value)}
+                                        disabled={isLoading}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleScrapeProduct();
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        className='px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors'
+                                        onClick={handleScrapeProduct}
+                                        disabled={isLoading || !scrapingUrl.trim()}
+                                    >
+                                        {isLoading ? 'Importando...' : 'Importar'}
+                                    </button>
+                                </div>
+                                <p className='mt-2 text-sm text-gray-600'>
+                                    Pega la URL del producto de catalogospromocionales.com
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

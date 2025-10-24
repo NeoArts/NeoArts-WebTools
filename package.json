@@ -24,6 +24,7 @@
     "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
     "astro": "^4.14.5",
+    "cheerio": "^1.1.0",
     "file-saver": "^2.0.5",
     "flowbite": "^2.5.2",
     "flowbite-react": "^0.10.1",

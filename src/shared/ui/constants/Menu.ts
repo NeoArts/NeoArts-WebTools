@@ -15,6 +15,21 @@ export const MenuOptions = [
         active: true
     },
     {
+        title: "Analizar requerimiento",
+        href: "/requirement-analysis",
+        active: true
+    },
+    {
+        title: "Computer listener",
+        href: "/computer-listener",
+        active: true
+    },
+    {
+        title: "Transcripción de audio",
+        href: "/mp3-transcription",
+        active: true
+    },
+    {
         title: "Notificaciones",
         href: "/notifications",
         active: true

@@ -36,6 +36,7 @@ export class NotificationService {
 
     // Error notifications
     static error(message: string, options?: any) {
+        console.error('Error:', message);
         this.saveToStorage('Error', message, 'error', 'system');
         return toast.error(message, {
             duration: 5000,

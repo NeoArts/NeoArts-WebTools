@@ -4,8 +4,11 @@ import TextArea from '../../../shared/ui/components/TextArea'
 import ImgContainer from './ImgContainer';
 import Button from '../../../shared/ui/components/Button';
 import ImagePopup from './ImagePopup';
+import ProviderSelect from './ProviderSelect';
+import Details from '../../providers/components/Details';
 import type { Product } from '../dtos/Product';
 import type { DocImage } from '../dtos/DocImage';
+import type { Provider } from '../../providers/dtos/Provider';
 
 function FormProducts( 
 { 
@@ -24,6 +27,8 @@ function FormProducts(
 }) {
 
     const [showImage, setShowImage] = React.useState(false)
+    const [showProviderPopup, setShowProviderPopup] = React.useState(false)
+    const [newProviderName, setNewProviderName] = React.useState('')
 
     useEffect(() => {
         
@@ -31,6 +36,29 @@ function FormProducts(
 
     const handleImageChange = (value: DocImage) => {
         onImageChange(product)(value)
+    }
+
+    const handleProviderChange = (providerName: string) => {
+        // Simulate the same event structure that handleValueChange expects
+        const syntheticEvent = {
+            target: {
+                id: `product-provider-${index}`,
+                value: providerName
+            }
+        };
+        handleValueChange(product)(syntheticEvent);
+    }
+
+    const handleOpenCreateProvider = (providerName: string) => {
+        setNewProviderName(providerName);
+        setShowProviderPopup(true);
+    }
+
+    const handleCloseProviderPopup = () => {
+        setShowProviderPopup(false);
+        setNewProviderName('');
+        // Dispatch custom event to notify ProviderSelect to reload providers
+        window.dispatchEvent(new Event('providersUpdated'));
     }
 
     const handleAutoPaste = async () => {
@@ -80,6 +108,16 @@ function FormProducts(
     return (
         product && <div className={`${!openDetails ? "flex-row" : "flex-col gap-2"} w-full rounded-lg flex relative`}>
             <ImagePopup open={showImage} setOpen={setShowImage} img={product.image?.base64String} handleImageChange={handleImageChange} />
+            <Details 
+                showPopup={showProviderPopup} 
+                setShowPopup={handleCloseProviderPopup} 
+                providerDetails={{
+                    id: Date.now(),
+                    name: newProviderName,
+                    discount: 0,
+                    wholesaleDiscount: []
+                } as Provider}
+            />
             <div className={`${openDetails ? "w-full" : "min-w-48 max-w-48 bg-white"} px-3 font-bold`}>
                 {!openDetails ? <Input
                     key={index} 
@@ -114,13 +152,10 @@ function FormProducts(
                 />
             </div>
             <div className={`${openDetails ? "w-full" : "min-w-60 max-w-60 bg-white"} relative px-3 font-bold`}>
-                <Input
-                    key={index} 
-                    type="text"
-                    id={`product-provider-${index}`}
+                <ProviderSelect
                     value={product.provider}
-                    onInput={handleValueChange(product)}
-                    placeholder='Proveedor'
+                    onChange={handleProviderChange}
+                    onOpenCreateProvider={handleOpenCreateProvider}
                     label={openDetails ? 'Proveedor' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
                 />
@@ -158,6 +193,18 @@ function FormProducts(
                     onInput={handleValueChange(product)}
                     placeholder='Cantidad'
                     label={openDetails ? 'Cantidad' : ''}
+                    labelPosition={openDetails ? 'top' : 'left'}
+                />
+            </div>
+            <div className={`${openDetails ? "w-full" : "min-w-32 max-w-32 bg-white"} px-3 font-bold`} title='Agrupa productos del mismo proveedor para sumar cantidades y aplicar descuentos por mayoreo'>
+                <Input
+                    key={index} 
+                    type="text"
+                    id={`product-discountGroup-${index}`}
+                    value={product.discountGroup || ''}
+                    onInput={handleValueChange(product)}
+                    placeholder='Grupo'
+                    label={openDetails ? 'Grupo Dto' : ''}
                     labelPosition={openDetails ? 'top' : 'left'}
                 />
             </div>  

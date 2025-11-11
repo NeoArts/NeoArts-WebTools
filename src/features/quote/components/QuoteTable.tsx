@@ -1,6 +1,7 @@
 import React, { useEffect, type Dispatch, type SetStateAction } from 'react'
 import Details from './Details'
 import FormProducts from './FormProducts'
+import DiscountGroupInfo from './DiscountGroupInfo'
 import { setProductAutomatedFields } from '../services/ProductCalc'
 import { emptyProduct } from '../constants/emptyProducts'
 import { updateQuote } from '../services/QuoteController'
@@ -16,6 +17,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
     const [scrapingUrl, setScrapingUrl] = React.useState('')
     const [isScraperOpen, setIsScraperOpen] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
+    const [showGroupInfo, setShowGroupInfo] = React.useState(false)
     const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
@@ -27,7 +29,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
             ...product,
             [e.target.id.split("-")[1]]: e.target.value
         }
-        setProductAutomatedFields(updatedProduct);
+        setProductAutomatedFields(updatedProduct, currentQuote.products);
         
         updateProduct(updatedProduct);
     }
@@ -44,6 +46,15 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
     const updateProduct = (updatedProduct: Product) =>
     {
         const updatedProducts = currentQuote.products.map((product, i) => product.id === updatedProduct.id ? updatedProduct : product)
+
+        // Recalculate all products in the same discount group
+        if (updatedProduct.discountGroup) {
+            updatedProducts.forEach(p => {
+                if (p.discountGroup === updatedProduct.discountGroup && p.provider === updatedProduct.provider) {
+                    setProductAutomatedFields(p, updatedProducts);
+                }
+            });
+        }
 
         setCurrentQuote((quote) => ({
             ...quote,
@@ -164,6 +175,7 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                 handleValueChange={handleValueChange}
                 onImageChange={onImageChange}
             />
+            <DiscountGroupInfo isOpen={showGroupInfo} onClose={() => setShowGroupInfo(false)} />
             <div className='w-full max-w-[calc(100vw-20rem)] overflow-scroll'>
                 <div className="mx-auto w-full flex flex-col gap-1">
                     <div className='w-full h-auto'>
@@ -175,6 +187,18 @@ function QuoteTable({ currentQuote, setCurrentQuote} : { currentQuote: Quote, se
                                 <div className='min-w-56 px-5 py-2 font-bold bg-white'>Descuento Proveedor</div>
                                 <div className='min-w-48 px-5 py-2 font-bold bg-white'>Costo</div>
                                 <div className='min-w-48 px-5 py-2 font-bold bg-white'>Cantidad</div>
+                                <div className='min-w-32 px-5 py-2 font-bold bg-white flex items-center gap-2'>
+                                    Grupo Dto
+                                    {/* <button
+                                        onClick={() => setShowGroupInfo(true)}
+                                        className='text-blue-500 hover:text-blue-700 transition-colors'
+                                        title='Información sobre grupos de descuento'
+                                    >
+                                        <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                                        </svg>
+                                    </button> */}
+                                </div>
                                 <div className='min-w-48 px-5 py-2 font-bold bg-white'>Costo dto</div>
                                 <div className='min-w-48 px-5 py-2 font-bold bg-white'>Marca</div>
                                 <div className='min-w-48 px-5 py-2 font-bold bg-white'>Otros Costos</div>

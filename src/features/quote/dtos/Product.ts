@@ -15,5 +15,6 @@ export type Product = {
     sellPrice: number,
     totalValue: number,
     profit: number,
-    image: DocImage
+    image: DocImage,
+    discountGroup?: string  // Group identifier for wholesale discount calculation
 }

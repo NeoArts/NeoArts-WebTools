@@ -13,7 +13,6 @@ function Quotes() {
     const [quotes, setQuotes] = React.useState([] as Quote[])
     const [openDetails, setOpenDetails] = React.useState(false)
     const [selectedQuotes, setSelectedQuotes] = React.useState([] as Quote[])
-    const [isCreatingBackup, setIsCreatingBackup] = React.useState(false)
     const baseUrl = import.meta.env.BASE_URL || '/';
 
     useEffect(() => {
@@ -47,6 +46,26 @@ function Quotes() {
         NotificationService.success('Cotización exportada exitosamente');
     }
 
+    const handleDownloadJson = (quote: Quote) => {
+        try {
+            const jsonData = JSON.stringify(quote, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `quote-${quote.number}-${quote.client.replace(/\s+/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            NotificationService.success('JSON descargado exitosamente');
+        } catch (error) {
+            console.error('Error downloading JSON:', error);
+            NotificationService.error('Error al descargar el JSON');
+        }
+    }
+
     const handleDelete = () => {
         if(confirm(`¿Estás segur@ de eliminar ${selectedQuotes.length} cotización${selectedQuotes.length > 1 ? 'es' : ''}?`)) {
             selectedQuotes.forEach(quote => {
@@ -57,62 +76,6 @@ function Quotes() {
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
-        }
-    }
-
-    const backupIndexedDB = (dbName: string) => {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName);
-            
-            request.onsuccess = (event) => {
-                const db = (event.target as IDBOpenDBRequest).result;
-                const transaction = db.transaction(db.objectStoreNames, 'readonly');
-                const backup: Record<string, any> = {};
-
-                let pendingStores = db.objectStoreNames.length;
-
-                for (const storeName of db.objectStoreNames) {
-                    const objectStore = transaction.objectStore(storeName);
-                    const getAllRequest = objectStore.getAll();
-
-                    getAllRequest.onsuccess = () => {
-                        backup[storeName] = getAllRequest.result;
-                        pendingStores--;
-
-                        if (pendingStores === 0) {
-                            resolve(backup);
-                        }
-                    };
-
-                    getAllRequest.onerror = () => reject(getAllRequest.error);
-                }
-            };
-
-            request.onerror = () => reject(request.error);
-        });
-    }
-
-    const handleCreateBackup = async () => {
-        setIsCreatingBackup(true);
-        try {
-            const backupData = await backupIndexedDB('QuotesDB');
-            const currentDate = new Date().toISOString().split('T')[0];
-            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `neoarts-quotes-backup-${currentDate}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            NotificationService.success('Copia de seguridad creada exitosamente');
-        } catch (error) {
-            console.error('Error creating backup:', error);
-            NotificationService.error('Error al crear la copia de seguridad');
-        } finally {
-            setIsCreatingBackup(false);
         }
     }
 
@@ -136,13 +99,6 @@ function Quotes() {
                             </p>
                         </div>
                         <div className="flex gap-3">
-                            <Button 
-                                text={isCreatingBackup ? 'Creando...' : 'Crear copia de seguridad'} 
-                                onClick={handleCreateBackup}
-                                disabled={isCreatingBackup || quotes.length === 0}
-                                variant="secondary"
-                                loading={isCreatingBackup}
-                            />
                             <Button 
                                 text='Nueva Cotización' 
                                 onClick={handleCreateNewQuote}
@@ -200,7 +156,12 @@ function Quotes() {
                             {/* Quotes List */}
                             <div className="space-y-3">
                                 {quotes
-                                    .sort((a: Quote, b: Quote) => Number(b.number) - Number(a.number))
+                                    .sort((a: Quote, b: Quote) => {
+                                        // Parse dates in DD/MM/YYYY format and sort from newest to oldest
+                                        const dateA = a.date.split('/').reverse().join('-'); // Convert to YYYY-MM-DD
+                                        const dateB = b.date.split('/').reverse().join('-'); // Convert to YYYY-MM-DD
+                                        return dateB.localeCompare(dateA); // Descending order (newest first)
+                                    })
                                     .map((quote: Quote) => (
                                         <div 
                                             className='flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-md transition-all duration-200' 
@@ -245,10 +206,19 @@ function Quotes() {
                                                 <button
                                                     className='flex items-center justify-center w-10 h-10 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'
                                                     onClick={() => handleExport(quote.id)}
-                                                    title="Exportar cotización"
+                                                    title="Exportar a Excel"
                                                 >
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    className='flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
+                                                    onClick={() => handleDownloadJson(quote)}
+                                                    title="Descargar JSON"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                                     </svg>
                                                 </button>
                                                 <button

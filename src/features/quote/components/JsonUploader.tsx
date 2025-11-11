@@ -3,8 +3,8 @@ import Button from "../../../shared/ui/components/Button";
 import { NotificationService } from "../../../shared/services/notifications";
 
 const JsonUploader: React.FC = () => {
-  const [jsonData, setJsonData] = useState<any>(null);
-  const [fileName, setFileName] = useState<string>("");
+  const [jsonData, setJsonData] = useState<any[]>([]);
+  const [fileNames, setFileNames] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
@@ -29,70 +29,91 @@ const JsonUploader: React.FC = () => {
     };
   }, []);
 
-  const validateJsonStructure = (data: any): boolean => {
+  const validateSingleQuote = (data: any): boolean => {
     if (!data) return false;
     
-    // Check if it's a backup file with quotes property
-    if (data.quotes && Array.isArray(data.quotes)) {
-      return data.quotes.every((quote: any) => 
-        quote.id && 
-        quote.client && 
-        quote.number && 
-        quote.date
-      );
-    }
-    
-    // Check if it's a direct array of quotes
-    if (Array.isArray(data)) {
-      return data.every((quote: any) => 
-        quote.id && 
-        quote.client && 
-        quote.number && 
-        quote.date
-      );
-    }
-    
-    return false;
+    // Check if it's a single quote object
+    return !!(data.id && data.client && data.number && data.date);
   };
 
-  const processFile = (file: File): void => {
-    const reader = new FileReader();
+  const processFiles = (files: FileList): void => {
+    const fileArray = Array.from(files);
+    const newQuotes: any[] = [];
+    const newFileNames: string[] = [];
+    let processedCount = 0;
+    let errorCount = 0;
 
-    reader.onload = (e: any) => {
-      try {
-        const data = JSON.parse(e.target.result);
+    fileArray.forEach((file, index) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          
+          if (!validateSingleQuote(data)) {
+            console.error(`Invalid quote structure in file: ${file.name}`);
+            errorCount++;
+          } else {
+            newQuotes.push(data);
+            newFileNames.push(file.name);
+          }
+
+          processedCount++;
+
+          // When all files are processed
+          if (processedCount === fileArray.length) {
+            if (newQuotes.length > 0) {
+              setJsonData(prev => [...prev, ...newQuotes]);
+              setFileNames(prev => [...prev, ...newFileNames]);
+              NotificationService.success(
+                `${newQuotes.length} archivo${newQuotes.length !== 1 ? 's' : ''} cargado${newQuotes.length !== 1 ? 's' : ''} exitosamente`
+              );
+            }
+            
+            if (errorCount > 0) {
+              NotificationService.warning(
+                `${errorCount} archivo${errorCount !== 1 ? 's' : ''} con estructura inválida`
+              );
+            }
+          }
+        } catch (err) {
+          console.error(`Error parsing JSON from ${file.name}:`, err);
+          errorCount++;
+          processedCount++;
+          
+          if (processedCount === fileArray.length && errorCount === fileArray.length) {
+            NotificationService.error("Error al leer los archivos JSON. Verifique que el formato sea correcto.");
+          }
+        }
+      };
+
+      reader.onerror = () => {
+        errorCount++;
+        processedCount++;
         
-        // if (!validateJsonStructure(data)) {
-        //   NotificationService.error("Estructura de archivo JSON inválida. Debe contener un array de cotizaciones válidas.");
-        //   return;
-        // }
+        if (processedCount === fileArray.length) {
+          NotificationService.error("Error al leer uno o más archivos");
+        }
+      };
 
-        // Extract quotes array (handle both backup format and direct array)
-        const quotes = data.quotes || data;
-        setJsonData(quotes);
-        setFileName(file.name);
-        NotificationService.success(`Archivo cargado: ${quotes.length} cotización${quotes.length !== 1 ? 'es' : ''} encontrada${quotes.length !== 1 ? 's' : ''}`);
-      } catch (err) {
-        console.error("Error parsing JSON:", err);
-        NotificationService.error("Error al leer el archivo JSON. Verifique que el formato sea correcto.");
-      }
-    };
-
-    reader.onerror = () => {
-      NotificationService.error("Error al leer el archivo");
-    };
-
-    reader.readAsText(file);
+      reader.readAsText(file);
+    });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.type !== "application/json" && !file.name.endsWith('.json')) {
-        NotificationService.error("Por favor seleccione un archivo JSON válido");
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      // Validate all files are JSON
+      const invalidFiles = Array.from(files).filter(
+        file => file.type !== "application/json" && !file.name.endsWith('.json')
+      );
+      
+      if (invalidFiles.length > 0) {
+        NotificationService.error("Por favor seleccione solo archivos JSON válidos");
         return;
       }
-      processFile(file);
+      
+      processFiles(files);
     }
   };
 
@@ -100,13 +121,19 @@ const JsonUploader: React.FC = () => {
     e.preventDefault();
     setDragOver(false);
     
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      if (file.type !== "application/json" && !file.name.endsWith('.json')) {
-        NotificationService.error("Por favor seleccione un archivo JSON válido");
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      // Validate all files are JSON
+      const invalidFiles = Array.from(files).filter(
+        file => file.type !== "application/json" && !file.name.endsWith('.json')
+      );
+      
+      if (invalidFiles.length > 0) {
+        NotificationService.error("Por favor seleccione solo archivos JSON válidos");
         return;
       }
-      processFile(file);
+      
+      processFiles(files);
     }
   };
 
@@ -121,7 +148,7 @@ const JsonUploader: React.FC = () => {
   };
 
   const handleSubmit = async (): Promise<void> => {
-    if (!jsonData || !Array.isArray(jsonData)) {
+    if (!jsonData || jsonData.length === 0) {
       NotificationService.error("No hay datos válidos para importar");
       return;
     }
@@ -162,8 +189,8 @@ const JsonUploader: React.FC = () => {
           }
 
           // Reset form
-          setJsonData(null);
-          setFileName("");
+          setJsonData([]);
+          setFileNames([]);
           
           // Reload page to see changes
           setTimeout(() => {
@@ -207,8 +234,8 @@ const JsonUploader: React.FC = () => {
   };
 
   const clearData = (): void => {
-    setJsonData(null);
-    setFileName("");
+    setJsonData([]);
+    setFileNames([]);
     NotificationService.info("Datos limpiados");
   };
 
@@ -219,7 +246,7 @@ const JsonUploader: React.FC = () => {
         className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
           dragOver
             ? 'border-purple-400 bg-purple-50'
-            : jsonData
+            : jsonData.length > 0
             ? 'border-green-300 bg-green-50'
             : 'border-gray-300 bg-gray-50 hover:border-gray-400'
         }`}
@@ -230,7 +257,7 @@ const JsonUploader: React.FC = () => {
         <div className="space-y-3">
           {/* Icon */}
           <div className="mx-auto">
-            {jsonData ? (
+            {jsonData.length > 0 ? (
               <div className="w-12 h-12 mx-auto bg-green-100 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -247,14 +274,11 @@ const JsonUploader: React.FC = () => {
 
           {/* Content */}
           <div>
-            {jsonData ? (
+            {jsonData.length > 0 ? (
               <div>
                 <h3 className="text-lg font-medium text-green-900">
-                  ✅ Archivo cargado exitosamente
+                  ✅ {jsonData.length} archivo{jsonData.length !== 1 ? 's' : ''} cargado{jsonData.length !== 1 ? 's' : ''}
                 </h3>
-                <p className="text-sm text-green-700 mt-1">
-                  <strong>{fileName}</strong>
-                </p>
                 <p className="text-sm text-green-600 mt-1">
                   {jsonData.length} cotización{jsonData.length !== 1 ? 'es' : ''} lista{jsonData.length !== 1 ? 's' : ''} para importar
                 </p>
@@ -262,13 +286,13 @@ const JsonUploader: React.FC = () => {
             ) : (
               <div>
                 <h3 className="text-lg font-medium text-gray-900">
-                  Arrastrar archivo JSON aquí
+                  Arrastrar archivos JSON aquí
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  o haz clic para seleccionar un archivo
+                  o haz clic para seleccionar archivos
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
-                  Acepta archivos de copia de seguridad (.json) de cotizaciones
+                  Acepta múltiples archivos JSON de cotizaciones individuales
                 </p>
               </div>
             )}
@@ -282,6 +306,7 @@ const JsonUploader: React.FC = () => {
               onChange={handleFileUpload}
               className="hidden"
               id="file-upload"
+              multiple
             />
             <label
               htmlFor="file-upload"
@@ -290,23 +315,36 @@ const JsonUploader: React.FC = () => {
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              {jsonData ? 'Cambiar archivo' : 'Seleccionar archivo'}
+              {jsonData.length > 0 ? 'Agregar más archivos' : 'Seleccionar archivos'}
             </label>
           </div>
         </div>
       </div>
 
       {/* File Details */}
-      {jsonData && (
+      {jsonData.length > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="font-medium text-blue-900 mb-2">Vista previa de importación</h4>
+          <h4 className="font-medium text-blue-900 mb-3">Vista previa de importación</h4>
+          
+          {/* Files List */}
+          <div className="max-h-48 overflow-y-auto mb-3 space-y-1">
+            {fileNames.map((name, index) => (
+              <div key={index} className="flex items-center gap-2 text-sm bg-white px-3 py-2 rounded border border-blue-100">
+                <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="text-blue-900 truncate">{name}</span>
+              </div>
+            ))}
+          </div>
+          
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-blue-700">Archivo:</span>
-              <span className="font-medium text-blue-900">{fileName}</span>
+              <span className="text-blue-700">Total de archivos:</span>
+              <span className="font-medium text-blue-900">{jsonData.length}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-blue-700">Cotizaciones:</span>
+              <span className="text-blue-700">Cotizaciones a importar:</span>
               <span className="font-medium text-blue-900">{jsonData.length}</span>
             </div>
             <div className="flex justify-between">
@@ -315,19 +353,17 @@ const JsonUploader: React.FC = () => {
             </div>
           </div>
           
-          {jsonData.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-blue-200">
-              <p className="text-xs text-blue-600">
-                <strong>Nota:</strong> Las cotizaciones duplicadas (mismo ID) no se importarán.
-              </p>
-            </div>
-          )}
+          <div className="mt-3 pt-3 border-t border-blue-200">
+            <p className="text-xs text-blue-600">
+              <strong>Nota:</strong> Las cotizaciones duplicadas (mismo ID) no se importarán.
+            </p>
+          </div>
         </div>
       )}
 
       {/* Action Buttons */}
       <div className="flex gap-3 justify-end">
-        {jsonData && (
+        {jsonData.length > 0 && (
           <Button
             text="Limpiar"
             onClick={clearData}
@@ -338,9 +374,9 @@ const JsonUploader: React.FC = () => {
         <Button
           text={isUploading ? 'Importando...' : 'Importar Cotizaciones'}
           onClick={handleSubmit}
-          disabled={!jsonData || isUploading}
+          disabled={jsonData.length === 0 || isUploading}
           loading={isUploading}
-          variant={jsonData ? 'success' : 'primary'}
+          variant={jsonData.length > 0 ? 'success' : 'primary'}
         />
       </div>
     </div>

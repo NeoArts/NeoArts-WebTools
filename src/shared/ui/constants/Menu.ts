@@ -15,6 +15,11 @@ export const MenuOptions = [
         active: true
     },
     {
+        title: "Conversor XML a JSON",
+        href: "/xml-converter",
+        active: true
+    },
+    {
         title: "Notificaciones",
         href: "/notifications",
         active: true

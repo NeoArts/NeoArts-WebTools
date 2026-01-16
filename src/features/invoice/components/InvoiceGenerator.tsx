@@ -114,6 +114,10 @@ function InvoiceGenerator() {
             value: '900392150-2'
         }, 
         {
+            label: 'María Carolina Longlax Triana',
+            value: '951976464'
+        }, 
+        {
             label: 'Urbanos Zonas De Creacion Y Construccion SAS',
             value: '900.180.604-4'
         }, 
